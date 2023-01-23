@@ -4,7 +4,7 @@ This quickstart helps you deploy MongoDB Atlas Cluster and Amazon SageMaker with
 
 ## Architecture Overview
 
-![](mongodb-sagemaker-quickstart.svg)
+![](docs/images/mongodb-sagemaker-quickstart.svg)
 
 1. Documents inserted into the MongoDB collection will be pushed to the EventBridge.
 2. An Event Rule will be matched and a Lambda will be triggered.
