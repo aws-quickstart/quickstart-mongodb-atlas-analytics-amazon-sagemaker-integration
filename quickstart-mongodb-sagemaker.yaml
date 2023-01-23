@@ -1,0 +1,281 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: MongoDB Atlas AWS CloudFormation Quickstart. (qs-1rkorhec7)
+
+Parameters:
+
+# MongoDB Atlas parameters.
+  PublicKey:
+    Description: "Your MongoDB Cloud Public API Key"
+    Type: String
+  PrivateKey:
+    Description: "Your MongoDB Cloud Private API Key"
+    Type: String
+  ClusterRegion:
+    Default: ap-south-1
+    Description: The AWS Region where the Atlas DB Cluster will run.
+    Type: String
+    AllowedValues:
+    - "us-east-1"
+    - "us-east-2"
+    - "ca-central-1"
+    - "us-west-1"
+    - "us-west-2"
+    - "sa-east-1"
+    - "ap-south-1"
+    - "ap-east-2"
+    - "ap-southeast-1"
+    - "ap-southeast-2"
+    - "ap-northeast-1"
+    - "ap-northeast-2"
+    - "eu-central-1"
+    - "eu-west-1"
+    - "eu-north-1"
+    - "eu-west-1"
+    - "eu-west-2"
+    - "eu-west-3"
+    - "eu-south-1"
+    - "me-south-1"
+    - "af-south-1"
+
+  # MongoDB trigger parameters.
+  DatabaseName:
+    Description: Database name to create a trigger on.
+    Type: String
+    Default: "Vehicles"
+  CollectionName:
+    Description: Collection name to create a trigger on.
+    Type: String
+    Default: "Component"
+  ServiceID:
+    Description: Service ID.
+    Type: String
+  RealmAppID:
+    Description: Realm App ID.
+    Type: String
+  AtlasProjectID:
+    Description: Atlas Project ID.
+    Type: String
+
+# SageMaker parameters.
+  ModelDataS3URL:
+    Description: The S3 path where the model artifacts, which result from model training, are stored. This path must point to a single gzip compressed tar archive (.tar.gz suffix).
+    Type: String
+    Default: s3://sagemaker-us-east-1-166187639221/model.tar.gz
+  ModelContainerURI:
+    Description: ECR image URI where inference code is stored.
+    Type: String
+    Default: 683313688378.dkr.ecr.us-east-1.amazonaws.com/sagemaker-scikit-learn:0.23-1-cpu-py3
+
+# Lambda parameters.
+  PullLambdaECRImageURI:
+    Description: ECR image URI of the Lambda function to read events from EventBridge.
+    Type: String
+    Default: 166187639221.dkr.ecr.us-east-1.amazonaws.com/pull_from_mdb:latest
+  PushLambdaECRImageURI:
+    Description: ECR image URI of the Lambda function to write data to MongoDB.
+    Type: String
+    Default: 166187639221.dkr.ecr.us-east-1.amazonaws.com/push_to_mdb:latest
+
+Resources:
+
+# MongoDB Atlas trigger (AWS EventBridge) resource.
+  EventTrigger:
+    Type: "MongoDB::Atlas::Trigger"
+    Properties:
+      Name: !Sub "${AWS::StackName}-trigger"
+      Type: DATABASE
+      DatabaseTrigger:
+        OperationTypes:
+          - INSERT
+        FullDocument: true
+        Database: !Ref "DatabaseName"
+        Collection: !Ref "CollectionName"
+        ServiceId: !Ref "ServiceID"
+      EventProcessors:
+        AWSEVENTBRIDGE:
+          AWSConfig:
+            AccountId: !Sub "${AWS::AccountId}"
+            Region: !Ref "ClusterRegion"
+            ExtendedJsonEnabled: false
+      AppId: !Ref "RealmAppID"
+      ProjectId: !Ref "AtlasProjectID"
+      RealmConfig:
+        PublicKey: !Ref "PublicKey"
+        PrivateKey: !Ref "PrivateKey"
+        BaseURL: https://cloud.mongodb.com/api/atlas/v1.0/
+        RealmBaseURL: https://realm.mongodb.com/api/admin/v3.0/
+
+# SageMaker resources.
+  Endpoint:
+    Type: "AWS::SageMaker::Endpoint"
+    Properties:
+      EndpointConfigName:
+        !GetAtt EndpointConfig.EndpointConfigName
+  EndpointConfig:
+    Type: "AWS::SageMaker::EndpointConfig"
+    Properties:
+      ProductionVariants:
+        - InitialInstanceCount: 1
+          InitialVariantWeight: 1.0
+          InstanceType: ml.c5.large
+          ModelName: !GetAtt Model.ModelName
+          VariantName: !GetAtt Model.ModelName
+  Model:
+    Type: AWS::SageMaker::Model
+    Properties:
+      Containers:
+        -
+          Image: !Ref ModelContainerURI
+          ModelDataUrl: !Ref ModelDataS3URL
+          Mode: SingleModel
+          Environment: {"SAGEMAKER_PROGRAM": "inference.py", "SAGEMAKER_SUBMIT_DIRECTORY": !Ref ModelDataS3URL}
+      ExecutionRoleArn: !GetAtt ExecutionRole.Arn
+  ExecutionRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Effect: "Allow"
+            Principal:
+              Service:
+                - "sagemaker.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Path: "/"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSageMakerFullAccess
+        - arn:aws:iam::aws:policy/AmazonSageMakerCanvasFullAccess
+      Policies:
+        -
+          PolicyName: sagemaker-execution-policy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              -
+                Effect: "Allow"
+                Action:
+                  - "s3:GetObject"
+                  - "s3:PutObject"
+                  - "s3:DeleteObject"
+                  - "s3:ListBucket"
+                Resource: "arn:aws:s3:::*"
+
+# Lambda resources.
+  # Lambda function to read events from EventBridge (PULL).
+  LambdaFunctionToReadFromMDB:
+    Type: AWS::Lambda::Function
+    Properties:
+      PackageType: Image
+      FunctionName: !Sub "${AWS::StackName}-read_from_mdb"
+      Role: !GetAtt LambdaFunctionRole.Arn
+      Code:
+        ImageUri: !Ref PullLambdaECRImageURI
+      Environment:
+        Variables:
+          model_endpoint: !Ref Endpoint.EndpointName
+          region_name: !Ref "ClusterRegion"
+          eventbus_name: !GetAtt EventTrigger.Name
+      Architectures:
+        - x86_64
+      MemorySize: 1024
+      Timeout: 300
+
+  # Lambda function to write data to MongoDB.
+  LambdaFunctionToWriteToMDB:
+    Type: AWS::Lambda::Function
+    Properties:
+      PackageType: Image
+      FunctionName: !Sub "${AWS::StackName}-write_to_mdb"
+      Role: !GetAtt LambdaFunctionRole.Arn
+      Code:
+        ImageUri: !Ref PushLambdaECRImageURI
+      Architectures:
+        - x86_64
+      MemorySize: 1024
+      Timeout: 300
+
+  # Lambda role required to read and write to MDB.
+  LambdaFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
+# EventBridge resources.
+  # Event bus.
+  EventBusForCapturingMDBChanges:
+    Type: AWS::Events::EventBus
+    Properties:
+      EventSourceName: !GetAtt EventTrigger.Name
+      Name: !GetAtt EventTrigger.Name
+
+  EventRuleForCapturingMDBChanges:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: Test Events Rule
+      EventBusName: !GetAtt EventTrigger.Name
+      EventPattern:
+        account: [!Ref AWS::AccountId]
+      Name: sagemaker-pull
+      State: ENABLED
+      Targets:
+        - Arn: !GetAtt LambdaFunctionToReadFromMDB.Arn
+          Id: "EventRuleForCapturingMDBChangesID"
+
+  # Allow EventBridge to invoke your function.
+  EventBridgeLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt LambdaFunctionToReadFromMDB.Arn
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt EventRuleForCapturingMDBChanges.Arn
+
+  EventRuleToCaptureEventsSentFromLambdaFunction:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: Test Events Rule
+      EventBusName: !GetAtt EventTrigger.Name
+      EventPattern:
+        source: [user-event]
+        detail-type: [user-preferences]
+      Name: push-to-lambda
+      State: ENABLED
+      Targets:
+        - Arn: !GetAtt LambdaFunctionToWriteToMDB.Arn
+          Id: "EventRuleToCaptureEventsSentFromLambdaFunctionID"
+
+# Allow EventBridge to invoke your function.
+  EventBridgeLambdaPermission2:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt LambdaFunctionToWriteToMDB.Arn
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt EventRuleToCaptureEventsSentFromLambdaFunction.Arn
+
+
+Outputs:
+  EventTrigger:
+    Value: !GetAtt "EventTrigger.Name"
+
+  # SageMaker outputs.
+  EndpointId:
+    Description: "SageMaker endpoint ID"
+    Value: !Ref Endpoint
+  EndpointName:
+    Description: "SageMaker endpoint name"
+    Value: !GetAtt Endpoint.EndpointName
