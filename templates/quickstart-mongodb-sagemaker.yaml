@@ -1,6 +1,6 @@
 ---
 AWSTemplateFormatVersion: '2010-09-09'
-Description: MongoDB Atlas AWS CloudFormation Quickstart. (qs-1rkorhec7)
+Description: Quickstart CloudFormation template to integrate MongoDB Atlas with Amazon Sagemaker
 
 Parameters:
 
@@ -71,11 +71,9 @@ Parameters:
   PullLambdaECRImageURI:
     Description: ECR image URI of the Lambda function to read events from EventBridge.
     Type: String
-    Default: 166187639221.dkr.ecr.us-east-1.amazonaws.com/pull_from_mdb:latest
   PushLambdaECRImageURI:
     Description: ECR image URI of the Lambda function to write data to MongoDB.
     Type: String
-    Default: 166187639221.dkr.ecr.us-east-1.amazonaws.com/push_to_mdb:latest
 
 Resources:
 
@@ -167,6 +165,7 @@ Resources:
   # Lambda function to read events from EventBridge (PULL).
   LambdaFunctionToReadFromMDB:
     Type: AWS::Lambda::Function
+    DependsOn: EventTrigger
     Properties:
       PackageType: Image
       FunctionName: !Sub "${AWS::StackName}-read_from_mdb"
@@ -175,9 +174,9 @@ Resources:
         ImageUri: !Ref PullLambdaECRImageURI
       Environment:
         Variables:
-          model_endpoint: !Ref Endpoint.EndpointName
+          model_endpoint: !Ref Endpoint
           region_name: !Ref "ClusterRegion"
-          eventbus_name: !GetAtt EventTrigger.Name
+          eventbus_name: !Join ['', ['aws.partner/mongodb.com/stitch.trigger/', !Ref "EventTrigger"] ]
       Architectures:
         - x86_64
       MemorySize: 1024
@@ -218,15 +217,17 @@ Resources:
   # Event bus.
   EventBusForCapturingMDBChanges:
     Type: AWS::Events::EventBus
+    DependsOn: EventTrigger
     Properties:
-      EventSourceName: !GetAtt EventTrigger.Name
-      Name: !GetAtt EventTrigger.Name
+      EventSourceName: !Join ['', ['aws.partner/mongodb.com/stitch.trigger/', !Ref "EventTrigger"] ]
+      Name: !Join ['', ['aws.partner/mongodb.com/stitch.trigger/', !Ref "EventTrigger"] ]
 
   EventRuleForCapturingMDBChanges:
     Type: AWS::Events::Rule
+    DependsOn: EventTrigger
     Properties:
       Description: Test Events Rule
-      EventBusName: !GetAtt EventTrigger.Name
+      EventBusName: !Join ['', ['aws.partner/mongodb.com/stitch.trigger/', !Ref "EventTrigger"] ]
       EventPattern:
         account: [!Ref AWS::AccountId]
       Name: sagemaker-pull
@@ -246,9 +247,10 @@ Resources:
 
   EventRuleToCaptureEventsSentFromLambdaFunction:
     Type: AWS::Events::Rule
+    DependsOn: EventTrigger
     Properties:
       Description: Test Events Rule
-      EventBusName: !GetAtt EventTrigger.Name
+      EventBusName: !Join ['', ['aws.partner/mongodb.com/stitch.trigger/', !Ref "EventTrigger"] ]
       EventPattern:
         source: [user-event]
         detail-type: [user-preferences]
@@ -269,13 +271,17 @@ Resources:
 
 
 Outputs:
+  # Trigger outputs.
   EventTrigger:
-    Value: !GetAtt "EventTrigger.Name"
+    Description: "Event trigger ID"
+    Value: !Ref "EventTrigger"
 
   # SageMaker outputs.
   EndpointId:
     Description: "SageMaker endpoint ID"
     Value: !Ref Endpoint
-  EndpointName:
-    Description: "SageMaker endpoint name"
-    Value: !GetAtt Endpoint.EndpointName
+
+  # Event bus outputs.
+  EventBusName:
+    Description: "Event Bus Name"
+    Value: !Ref EventBusForCapturingMDBChanges
