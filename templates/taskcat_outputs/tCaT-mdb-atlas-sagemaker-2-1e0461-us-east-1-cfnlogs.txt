@@ -1,0 +1,57 @@
+-----------------------------------------------------------------------------
+Region: us-east-1
+StackName: tCaT-mdb-atlas-sagemaker-2-1e0461
+*****************************************************************************
+ResourceStatusReason:  
+Stack launch was successful
+*****************************************************************************
+*****************************************************************************
+Events:  
+TimeStamp                         ResourceStatus      ResourceType                    LogicalResourceId                               ResourceStatusReason
+--------------------------------  ------------------  ------------------------------  ----------------------------------------------  ---------------------------
+2023-01-25 12:23:47.422000+00:00  CREATE_COMPLETE     AWS::CloudFormation::Stack      tCaT-mdb-atlas-sagemaker-2-1e0461
+2023-01-25 12:23:45.764000+00:00  CREATE_COMPLETE     AWS::Lambda::Permission         EventBridgeLambdaPermission
+2023-01-25 12:23:35.411000+00:00  CREATE_IN_PROGRESS  AWS::Lambda::Permission         EventBridgeLambdaPermission                     Resource creation Initiated
+2023-01-25 12:23:34.932000+00:00  CREATE_IN_PROGRESS  AWS::Lambda::Permission         EventBridgeLambdaPermission
+2023-01-25 12:23:32.855000+00:00  CREATE_COMPLETE     AWS::Events::Rule               EventRuleForCapturingMDBChanges
+2023-01-25 12:22:32.182000+00:00  CREATE_IN_PROGRESS  AWS::Events::Rule               EventRuleForCapturingMDBChanges                 Resource creation Initiated
+2023-01-25 12:22:31.629000+00:00  CREATE_IN_PROGRESS  AWS::Events::Rule               EventRuleForCapturingMDBChanges
+2023-01-25 12:22:29.631000+00:00  CREATE_COMPLETE     AWS::Lambda::Function           LambdaFunctionToReadFromMDB
+2023-01-25 12:22:00+00:00         CREATE_IN_PROGRESS  AWS::Lambda::Function           LambdaFunctionToReadFromMDB                     Resource creation Initiated
+2023-01-25 12:21:58.257000+00:00  CREATE_IN_PROGRESS  AWS::Lambda::Function           LambdaFunctionToReadFromMDB
+2023-01-25 12:21:56.193000+00:00  CREATE_COMPLETE     AWS::SageMaker::Endpoint        Endpoint
+2023-01-25 12:21:00.887000+00:00  CREATE_COMPLETE     AWS::Lambda::Permission         EventBridgeLambdaPermission2
+2023-01-25 12:20:50.592000+00:00  CREATE_IN_PROGRESS  AWS::Lambda::Permission         EventBridgeLambdaPermission2                    Resource creation Initiated
+2023-01-25 12:20:49.958000+00:00  CREATE_IN_PROGRESS  AWS::Lambda::Permission         EventBridgeLambdaPermission2
+2023-01-25 12:20:47.841000+00:00  CREATE_COMPLETE     AWS::Events::Rule               EventRuleToCaptureEventsSentFromLambdaFunction
+2023-01-25 12:19:46.699000+00:00  CREATE_IN_PROGRESS  AWS::Events::Rule               EventRuleToCaptureEventsSentFromLambdaFunction  Resource creation Initiated
+2023-01-25 12:19:45.712000+00:00  CREATE_IN_PROGRESS  AWS::Events::Rule               EventRuleToCaptureEventsSentFromLambdaFunction
+2023-01-25 12:19:44.197000+00:00  CREATE_COMPLETE     AWS::Lambda::Function           LambdaFunctionToWriteToMDB
+2023-01-25 12:19:23.369000+00:00  CREATE_IN_PROGRESS  AWS::SageMaker::Endpoint        Endpoint                                        Resource creation Initiated
+2023-01-25 12:19:21.330000+00:00  CREATE_IN_PROGRESS  AWS::SageMaker::Endpoint        Endpoint
+2023-01-25 12:19:19.260000+00:00  CREATE_COMPLETE     AWS::SageMaker::EndpointConfig  EndpointConfig
+2023-01-25 12:19:19.013000+00:00  CREATE_IN_PROGRESS  AWS::SageMaker::EndpointConfig  EndpointConfig                                  Resource creation Initiated
+2023-01-25 12:19:17.532000+00:00  CREATE_IN_PROGRESS  AWS::SageMaker::EndpointConfig  EndpointConfig
+2023-01-25 12:19:15.650000+00:00  CREATE_COMPLETE     AWS::SageMaker::Model           Model
+2023-01-25 12:19:15.501000+00:00  CREATE_IN_PROGRESS  AWS::SageMaker::Model           Model                                           Resource creation Initiated
+2023-01-25 12:19:15.162000+00:00  CREATE_IN_PROGRESS  AWS::Lambda::Function           LambdaFunctionToWriteToMDB                      Resource creation Initiated
+2023-01-25 12:19:13.717000+00:00  CREATE_IN_PROGRESS  AWS::SageMaker::Model           Model
+2023-01-25 12:19:13.329000+00:00  CREATE_IN_PROGRESS  AWS::Lambda::Function           LambdaFunctionToWriteToMDB
+2023-01-25 12:19:11.496000+00:00  CREATE_COMPLETE     AWS::IAM::Role                  ExecutionRole
+2023-01-25 12:19:11.150000+00:00  CREATE_COMPLETE     AWS::IAM::Role                  LambdaFunctionRole
+2023-01-25 12:19:02.852000+00:00  CREATE_COMPLETE     AWS::Events::EventBus           EventBusForCapturingMDBChanges
+2023-01-25 12:19:02.660000+00:00  CREATE_IN_PROGRESS  AWS::Events::EventBus           EventBusForCapturingMDBChanges                  Resource creation Initiated
+2023-01-25 12:19:01.082000+00:00  CREATE_IN_PROGRESS  AWS::Events::EventBus           EventBusForCapturingMDBChanges
+2023-01-25 12:18:59.416000+00:00  CREATE_COMPLETE     MongoDB::Atlas::Trigger         EventTrigger
+2023-01-25 12:18:59.099000+00:00  CREATE_IN_PROGRESS  MongoDB::Atlas::Trigger         EventTrigger                                    Resource creation Initiated
+2023-01-25 12:18:57.200000+00:00  CREATE_IN_PROGRESS  AWS::IAM::Role                  LambdaFunctionRole                              Resource creation Initiated
+2023-01-25 12:18:56.838000+00:00  CREATE_IN_PROGRESS  AWS::IAM::Role                  ExecutionRole                                   Resource creation Initiated
+2023-01-25 12:18:56.829000+00:00  CREATE_IN_PROGRESS  AWS::IAM::Role                  LambdaFunctionRole
+2023-01-25 12:18:56.506000+00:00  CREATE_IN_PROGRESS  AWS::IAM::Role                  ExecutionRole
+2023-01-25 12:18:56.434000+00:00  CREATE_IN_PROGRESS  MongoDB::Atlas::Trigger         EventTrigger
+2023-01-25 12:18:51.554000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack      tCaT-mdb-atlas-sagemaker-2-1e0461               User Initiated
+*****************************************************************************
+-----------------------------------------------------------------------------
+Tested on: Wednesday, 25. January 2023 05:54PM
+-----------------------------------------------------------------------------
+
