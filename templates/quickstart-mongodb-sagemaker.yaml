@@ -224,7 +224,7 @@ Resources:
 
   EventRuleForCapturingMDBChanges:
     Type: AWS::Events::Rule
-    DependsOn: EventTrigger
+    DependsOn: EventBusForCapturingMDBChanges
     Properties:
       Description: Test Events Rule
       EventBusName: !Join ['', ['aws.partner/mongodb.com/stitch.trigger/', !Ref "EventTrigger"] ]
@@ -247,7 +247,7 @@ Resources:
 
   EventRuleToCaptureEventsSentFromLambdaFunction:
     Type: AWS::Events::Rule
-    DependsOn: EventTrigger
+    DependsOn: EventBusForCapturingMDBChanges
     Properties:
       Description: Test Events Rule
       EventBusName: !Join ['', ['aws.partner/mongodb.com/stitch.trigger/', !Ref "EventTrigger"] ]
