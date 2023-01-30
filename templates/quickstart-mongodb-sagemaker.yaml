@@ -1,6 +1,6 @@
 ---
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Quickstart CloudFormation template to integrate MongoDB Atlas with Amazon Sagemaker
+Description: Quickstart CloudFormation template to integrate MongoDB Atlas with Amazon Sagemaker (qs-1rkorhec7)
 
 Parameters:
 
@@ -144,8 +144,8 @@ Resources:
               - "sts:AssumeRole"
       Path: "/"
       ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/AmazonSageMakerFullAccess
-        - arn:aws:iam::aws:policy/AmazonSageMakerCanvasFullAccess
+        - arn:${AWS::Partition}:iam::aws:policy/AmazonSageMakerFullAccess
+        - arn:${AWS::Partition}:iam::aws:policy/AmazonSageMakerCanvasFullAccess
       Policies:
         -
           PolicyName: sagemaker-execution-policy
@@ -159,7 +159,7 @@ Resources:
                   - "s3:PutObject"
                   - "s3:DeleteObject"
                   - "s3:ListBucket"
-                Resource: "arn:aws:s3:::*"
+                Resource: "arn:${AWS::Partition}:s3:::*"
 
 # Lambda resources.
   # Lambda function to read events from EventBridge (PULL).
@@ -211,7 +211,7 @@ Resources:
               - sts:AssumeRole
       Path: /
       ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
 
 # EventBridge resources.
   # Event bus.
