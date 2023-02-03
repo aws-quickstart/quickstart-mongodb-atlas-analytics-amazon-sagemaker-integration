@@ -1,6 +1,64 @@
 ---
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Quickstart CloudFormation template to integrate MongoDB Atlas with Amazon Sagemaker (qs-1rkorhec7)
+Description: Quickstart CloudFormation template to integrate MongoDB Atlas with Amazon Sagemaker (qs-1trcrtan9)
+
+Metadata:
+  cfn-lint: { config: { ignore_checks: [ W9002, W9003, W9006, E3001, E1010 ] } }
+  QuickStartDocumentation:
+    EntrypointName: "Parameters for deploying MongoDB Trigger, Amazon SageMaker, AWS EventBridge and Lambda functions"
+    Order: "1"
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+    - Label:
+        default: MongoDB Atlas API key configuration
+      Parameters:
+      - PublicKey
+      - PrivateKey
+      - AtlasProjectID
+    - Label:
+        default: MongoDB trigger parameters
+      Parameters:
+      - ActivateMongoDBTriggerResource
+      - DatabaseName
+      - CollectionName
+      - ServiceID
+      - RealmAppID
+    - Label:
+        default: SageMaker configuration
+      Parameters:
+      - ModelDataS3URL
+      - ModelECRImageURI
+    - Label:
+        default: Lambda configuration
+      Parameters:
+      - PullLambdaECRImageURI
+      - PushLambdaECRImageURI
+
+    ParameterLabels:
+      PublicKey:
+        default: MongoDB Atlas API public key
+      PrivateKey:
+        default: MongoDB Atlas API private key
+      ActivateMongoDBTriggerResource:
+        default: Activate MongoDB Atlas Trigger CloudFormation Resource
+      DatabaseName:
+        default: Database name for the trigger
+      CollectionName:
+        default: Collection name for the trigger
+      ServiceID:
+        default: Realm Service ID
+      RealmAppID:
+        default: Realm App ID
+      AtlasProjectID:
+        default: MongoDB Atlas project ID
+      ModelDataS3URL:
+        default: Model Artifacts S3 URI
+      ModelECRImageURI:
+        default: Model ECR Image URI
+      PullLambdaECRImageURI:
+        default: Pull Lambda ECR Image URI
+      PushLambdaECRImageURI:
+        default: Push Lambda ECR Image URI
 
 Parameters:
 
@@ -11,34 +69,15 @@ Parameters:
   PrivateKey:
     Description: "Your MongoDB Cloud Private API Key"
     Type: String
-  ClusterRegion:
-    Default: ap-south-1
-    Description: The AWS Region where the Atlas DB Cluster will run.
-    Type: String
-    AllowedValues:
-    - "us-east-1"
-    - "us-east-2"
-    - "ca-central-1"
-    - "us-west-1"
-    - "us-west-2"
-    - "sa-east-1"
-    - "ap-south-1"
-    - "ap-east-2"
-    - "ap-southeast-1"
-    - "ap-southeast-2"
-    - "ap-northeast-1"
-    - "ap-northeast-2"
-    - "eu-central-1"
-    - "eu-west-1"
-    - "eu-north-1"
-    - "eu-west-1"
-    - "eu-west-2"
-    - "eu-west-3"
-    - "eu-south-1"
-    - "me-south-1"
-    - "af-south-1"
 
-  # MongoDB trigger parameters.
+  # MongoDB Trigger parameters.
+  ActivateMongoDBTriggerResource:
+    Description: 'Choose "Yes" to activate MongoDB Atlas Trigger CloudFormation resource. If you already activated it in your AWS Region, enter "No."'
+    Type: String
+    Default: "Yes"
+    AllowedValues:
+      - "No"
+      - "Yes"
   DatabaseName:
     Description: Database name to create a trigger on.
     Type: String
@@ -62,24 +101,66 @@ Parameters:
     Description: The S3 path where the model artifacts, which result from model training, are stored. This path must point to a single gzip compressed tar archive (.tar.gz suffix).
     Type: String
     Default: s3://sagemaker-us-east-1-166187639221/model.tar.gz
-  ModelContainerURI:
-    Description: ECR image URI where inference code is stored.
+  ModelECRImageURI:
+    Description: AWS managed Deep Learning Container Image URI or your custom Image URI from ECR to deploy and run the model.
     Type: String
     Default: 683313688378.dkr.ecr.us-east-1.amazonaws.com/sagemaker-scikit-learn:0.23-1-cpu-py3
 
 # Lambda parameters.
   PullLambdaECRImageURI:
-    Description: ECR image URI of the Lambda function to read events from EventBridge.
+    Description: ECR image URI of the Lambda function to read MongoDB events from EventBridge.
     Type: String
   PushLambdaECRImageURI:
-    Description: ECR image URI of the Lambda function to write data to MongoDB.
+    Description: ECR image URI of the Lambda function to write results back to MongoDB.
     Type: String
+
+Conditions:
+
+  # Condition to check activation of Trigger resource in the current AWS region.
+  ActivateResources: !Equals [!Ref ActivateMongoDBTriggerResource, 'Yes']
 
 Resources:
 
-# MongoDB Atlas trigger (AWS EventBridge) resource.
+  # Activate MongoDB Trigger resource.
+  ActivateTrigger:
+    Condition: ActivateResources
+    Type: AWS::CloudFormation::TypeActivation
+    Properties:
+      PublicTypeArn: !Join [ "", [ 'arn:aws:cloudformation:', !Ref "AWS::Region", '::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-Trigger' ] ]
+      Type: RESOURCE
+      TypeName: MongoDB::Atlas::Trigger
+      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
+  MongoDBCustomResourceExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      MaxSessionDuration: 8400
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - "resources.cloudformation.amazonaws.com"
+            Action: sts:AssumeRole
+      Path: "/"
+      Policies:
+        - PolicyName: ResourceTypePolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Deny
+                Action:
+                  - "*"
+                Resource: "*"
+
+  # Create MongoDB Atlas Trigger with AWS EventBridge as event preocessor.
   EventTrigger:
-    Type: "MongoDB::Atlas::Trigger"
+    Type: MongoDB::Atlas::Trigger
+    Metadata:
+      PseudoDependsOn: !If
+        - ActivateResources
+        - - !Ref ActivateTrigger
+        - ''
     Properties:
       Name: !Sub "${AWS::StackName}-trigger"
       Type: DATABASE
@@ -87,31 +168,31 @@ Resources:
         OperationTypes:
           - INSERT
         FullDocument: true
-        Database: !Ref "DatabaseName"
-        Collection: !Ref "CollectionName"
-        ServiceId: !Ref "ServiceID"
+        Database: !Ref DatabaseName
+        Collection: !Ref CollectionName
+        ServiceId: !Ref ServiceID
       EventProcessors:
         AWSEVENTBRIDGE:
           AWSConfig:
-            AccountId: !Sub "${AWS::AccountId}"
-            Region: !Ref "ClusterRegion"
+            AccountId: !Ref AWS::AccountId
+            Region: !Ref AWS::Region
             ExtendedJsonEnabled: false
-      AppId: !Ref "RealmAppID"
-      ProjectId: !Ref "AtlasProjectID"
+      AppId: !Ref RealmAppID
+      ProjectId: !Ref AtlasProjectID
       RealmConfig:
-        PublicKey: !Ref "PublicKey"
-        PrivateKey: !Ref "PrivateKey"
+        PublicKey: !Ref PublicKey
+        PrivateKey: !Ref PrivateKey
         BaseURL: https://cloud.mongodb.com/api/atlas/v1.0/
         RealmBaseURL: https://realm.mongodb.com/api/admin/v3.0/
 
 # SageMaker resources.
   Endpoint:
-    Type: "AWS::SageMaker::Endpoint"
+    Type: AWS::SageMaker::Endpoint
     Properties:
       EndpointConfigName:
         !GetAtt EndpointConfig.EndpointConfigName
   EndpointConfig:
-    Type: "AWS::SageMaker::EndpointConfig"
+    Type: AWS::SageMaker::EndpointConfig
     Properties:
       ProductionVariants:
         - InitialInstanceCount: 1
@@ -124,28 +205,28 @@ Resources:
     Properties:
       Containers:
         -
-          Image: !Ref ModelContainerURI
+          Image: !Ref ModelECRImageURI
           ModelDataUrl: !Ref ModelDataS3URL
           Mode: SingleModel
           Environment: {"SAGEMAKER_PROGRAM": "inference.py", "SAGEMAKER_SUBMIT_DIRECTORY": !Ref ModelDataS3URL}
       ExecutionRoleArn: !GetAtt ExecutionRole.Arn
   ExecutionRole:
-    Type: "AWS::IAM::Role"
+    Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
           -
-            Effect: "Allow"
+            Effect: Allow
             Principal:
               Service:
-                - "sagemaker.amazonaws.com"
+                - sagemaker.amazonaws.com
             Action:
-              - "sts:AssumeRole"
-      Path: "/"
+              - sts:AssumeRole
+      Path: /
       ManagedPolicyArns:
-        - arn:${AWS::Partition}:iam::aws:policy/AmazonSageMakerFullAccess
-        - arn:${AWS::Partition}:iam::aws:policy/AmazonSageMakerCanvasFullAccess
+        - !Join [ "", [ 'arn:', !Ref AWS::Partition, ':iam::aws:policy/AmazonSageMakerFullAccess' ] ]
+        - !Join [ "", [ 'arn:', !Ref AWS::Partition, ':iam::aws:policy/AmazonSageMakerCanvasFullAccess' ] ]
       Policies:
         -
           PolicyName: sagemaker-execution-policy
@@ -153,19 +234,17 @@ Resources:
             Version: "2012-10-17"
             Statement:
               -
-                Effect: "Allow"
+                Effect: Allow
                 Action:
-                  - "s3:GetObject"
-                  - "s3:PutObject"
-                  - "s3:DeleteObject"
-                  - "s3:ListBucket"
-                Resource: "arn:${AWS::Partition}:s3:::*"
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:DeleteObject
+                  - s3:ListBucket
+                Resource: !Join [ "", [ 'arn:', !Ref AWS::Partition, ':s3:::*' ] ]
 
-# Lambda resources.
   # Lambda function to read events from EventBridge (PULL).
-  LambdaFunctionToReadFromMDB:
+  LambdaFunctionToReadMDBEvents:
     Type: AWS::Lambda::Function
-    DependsOn: EventTrigger
     Properties:
       PackageType: Image
       FunctionName: !Sub "${AWS::StackName}-read_from_mdb"
@@ -175,7 +254,7 @@ Resources:
       Environment:
         Variables:
           model_endpoint: !Ref Endpoint
-          region_name: !Ref "ClusterRegion"
+          region_name: !Ref AWS::Region
           eventbus_name: !Join ['', ['aws.partner/mongodb.com/stitch.trigger/', !Ref "EventTrigger"] ]
       Architectures:
         - x86_64
@@ -211,45 +290,44 @@ Resources:
               - sts:AssumeRole
       Path: /
       ManagedPolicyArns:
-        - arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - !Join [ "", [ 'arn:', !Ref AWS::Partition, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole' ] ]
 
-# EventBridge resources.
+  # EventBridge resources.
   # Event bus.
-  EventBusForCapturingMDBChanges:
+  EventBusForCapturingMDBEvents:
     Type: AWS::Events::EventBus
-    DependsOn: EventTrigger
     Properties:
       EventSourceName: !Join ['', ['aws.partner/mongodb.com/stitch.trigger/', !Ref "EventTrigger"] ]
       Name: !Join ['', ['aws.partner/mongodb.com/stitch.trigger/', !Ref "EventTrigger"] ]
 
-  EventRuleForCapturingMDBChanges:
+  EventRuleToMatchMDBEvents:
     Type: AWS::Events::Rule
-    DependsOn: EventBusForCapturingMDBChanges
+    DependsOn: EventBusForCapturingMDBEvents
     Properties:
-      Description: Test Events Rule
+      Description: Event Rule to match MongoDB events.
       EventBusName: !Join ['', ['aws.partner/mongodb.com/stitch.trigger/', !Ref "EventTrigger"] ]
       EventPattern:
         account: [!Ref AWS::AccountId]
       Name: sagemaker-pull
       State: ENABLED
       Targets:
-        - Arn: !GetAtt LambdaFunctionToReadFromMDB.Arn
-          Id: "EventRuleForCapturingMDBChangesID"
+        - Arn: !GetAtt LambdaFunctionToReadMDBEvents.Arn
+          Id: "EventRuleToMatchMDBEventsID"
 
   # Allow EventBridge to invoke your function.
-  EventBridgeLambdaPermission:
+  EventBridgeLambdaPermission1:
     Type: AWS::Lambda::Permission
     Properties:
-      FunctionName: !GetAtt LambdaFunctionToReadFromMDB.Arn
+      FunctionName: !GetAtt LambdaFunctionToReadMDBEvents.Arn
       Action: lambda:InvokeFunction
       Principal: events.amazonaws.com
-      SourceArn: !GetAtt EventRuleForCapturingMDBChanges.Arn
+      SourceArn: !GetAtt EventRuleToMatchMDBEvents.Arn
 
   EventRuleToCaptureEventsSentFromLambdaFunction:
     Type: AWS::Events::Rule
-    DependsOn: EventBusForCapturingMDBChanges
+    DependsOn: EventBusForCapturingMDBEvents
     Properties:
-      Description: Test Events Rule
+      Description: Event Rule to match result events returned by pull Lambda.
       EventBusName: !Join ['', ['aws.partner/mongodb.com/stitch.trigger/', !Ref "EventTrigger"] ]
       EventPattern:
         source: [user-event]
@@ -284,4 +362,4 @@ Outputs:
   # Event bus outputs.
   EventBusName:
     Description: "Event Bus Name"
-    Value: !Ref EventBusForCapturingMDBChanges
+    Value: !Ref EventBusForCapturingMDBEvents
