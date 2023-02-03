@@ -1,3 +1,82 @@
-//Include any predeployment steps here, such as signing up for a Marketplace AMI or making any changes to a partner account. If there are no predeployment steps, leave this file empty.
+// Include any predeployment steps here, such as signing up for a Marketplace AMI or making any changes to a partner account. If there are no predeployment steps, leave this file empty.
 
 == Predeployment steps
+
+=== Specialized knowledge
+
+This deployment requires a moderate level of familiarity with AWS services. If you're new to AWS, see https://aws.amazon.com/getting-started/[Getting Started Resource Center^] and https://aws.amazon.com/training/[AWS Training and Certification^]. These sites provide materials for learning how to design, deploy, and operate your infrastructure and applications on the AWS Cloud.
+
+This Quick Start assumes familiarity with MongoDB Atlas. For more information, see https://docs.atlas.mongodb.com/getting-started[Get Started with Atlas^].
+
+This Quick Start uses the official MongoDB Atlas AWS CloudFormation resource types.
+
+=== AWS Account
+
+If you don't already have an AWS account, create one at https://aws.amazon.com/[https://aws.amazon.com^] by following the on-screen instructions. Part of the sign-up process involves receiving a phone call and entering a PIN using the phone keypad.
+
+Your AWS account is automatically signed up for all AWS services. You are charged only for the services you use.
+
+=== Technical Requirements
+
+Before you launch the Quick Start, review the following information and ensure that your account is properly configured. Otherwise, deployment might fail.
+
+=== Resource Quotas
+
+If necessary, request https://console.aws.amazon.com/servicequotas/home?region=us-east-2#!/[service quota increases^] for the following resources. You might request quota increases to avoid exceeding the default limits for any resources that are shared across multiple deployments. The https://console.aws.amazon.com/servicequotas/home?region=us-east-2#!/[Service Quotas console^] displays your usage and quotas for some aspects of some services. For more information, see https://docs.aws.amazon.com/servicequotas/latest/userguide/intro.html[What is Service Quotas?^] and https://docs.aws.amazon.com/general/latest/gr/aws_service_limits.html[AWS service quotas^].
+
+Resource                       | This deployment uses
+------------------------------ | ---------------------
+MongoDB::Atlas::Trigger        | 1
+AWS::SageMaker::Model          | 1
+AWS::SageMaker::EndpointConfig | 1
+AWS::SageMaker::Endpoint       | 1
+AWS::Lambda::Function          | 2
+AWS::Events::EventBus          | 1
+AWS::Events::Rule              | 2
+IAM Roles                      | 2
+
+=== Supported Regions
+
+MongoDB Atlas is available across most AWS Regions. For more information, see https://docs.atlas.mongodb.com/reference/amazon-aws[Amazon Web Services (AWS)^].
+
+> Certain Regions are available on an opt-in basis. For more information, see https://docs.aws.amazon.com/general/latest/gr/rande-manage.html[Managing AWS Regions^].
+
+=== IAM Permissions
+
+Before launching the Quick Start, you must sign in to the AWS Management Console with IAM permissions for the resources that the templates deploy. The `AdministratorAccess` managed policy within IAM provides sufficient permissions, although your organization may choose to use a custom policy with more restrictions. For more information, see https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_job-functions.html[AWS managed policies for job functions^].
+
+=== Prepare your AWS Account
+
+This Quick Start uses MongoDB Atlas CloudFormation resource types and automatically registers them in the AWS Region of your choice. Once it's running, you can safely skip this step for additional deployments in each Region by setting the `RegisterMongoDBResources` parameter to **No**.
+
+=== Prepare your MongoDB Inc. Account
+
+A MongoDB Atlas programmatic API key must be generated with the appropriate permissions and network access entries so that AWS CloudFormation can successfully authenticate the MongoDB cloud. For more information about creating and managing API keys, see https://docs.atlas.mongodb.com/tutorial/manage-programmatic-access[Programmatic Access to Atlas^].
+
+=== Create MongoDB Atlas Cluster
+
+A MongoDB Atlas Cluster must be created via https://www.mongodb.com[MongoDB Official Website^] or using the https://aws.amazon.com/quickstart/architecture/mongodb-atlas/[MongoDB Atlas on AWS Quick Start^]. Please see https://aws-quickstart.github.io/quickstart-mongodb-atlas/[Quick Start Reference Deployment^] for detailed information to lauch MongoDB Atlas on AWS Cloud.
+
+=== Create Realm App and Service
+
+A MongoDB Realm App and Service to create triggers which sends events to AWS EventBridge for further processing.
+
+Check the https://www.mongodb.com/docs/atlas/app-services/admin/api/v3/[Atlas App Services API (3.0)^] to create a Realm App and App Service.
+
+Here are direct links to API documentation for creating an app and a service.
+
+* https://www.mongodb.com/docs/atlas/app-services/admin/api/v3/#section/Get-Authentication-Tokens[Get authentication tokens^] (Use the access token as Bearer token in Authorization header in the further calls)
+* https://www.mongodb.com/docs/atlas/app-services/admin/api/v3/#tag/apps/operation/adminCreateApplication[Create App^]
+* https://www.mongodb.com/docs/atlas/app-services/admin/api/v3/#tag/services/operation/adminCreateService[Create Service^]
+
+**Note**: Keep the App ID and Service ID handy for further steps.
+
+Please check this https://www.mongodb.com/docs/atlas/app-services/[link^] to learn more about Atlas App Services.
+
+=== Upload ML Model Artifacts to S3
+
+Upload your ML Model artifacts to Amazon S3 and create an AWS managed Deep Learning Container Image or your custom Image in ECR to deploy and run the model. For more details on creating container image please check the example code provided in GitHub repository.
+
+=== Create ECR Images for Pull and Push Lambdas
+
+A Lambda function to read MongoDB events from EventBridge and another Lambda function to write results back to MongoDB are required as ECR container images.

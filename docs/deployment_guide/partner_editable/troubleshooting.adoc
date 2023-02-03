@@ -4,3 +4,55 @@ For troubleshooting common Partner Solution issues, refer to the https://fwd.aws
 
 // == Resources
 // Uncomment section and add links to any external resources that are specified by the partner.
+
+Errors can typically be resolved by inspecting the CloudFormation event logs or CloudWatch logs created by the MongoDB Atlas CloudFormation resources.
+
+If a stack fails to deploy, check the *Events* tab. If the error occurs for one of the MongoDB Atlas resources (for example, MongoDB::Atlas::Trigger), you will find a corresponding Amazon CloudWatch Logs group called *mongodb-atlas-trigger-logs*. Locate this group, and check the latest log entry to identify the issue.
+
+== Parameter Reference
+
+*Table 1. MongoDB Atlas API key configuration*
+
+Parameter label (name)                     | Default value  | Description
+------------------------------------------ | -------------- | -------------
+MongoDB Atlas API public key (PublicKey)   | NA      | MongoDB cloud public API key.
+MongoDB Atlas API private key (PrivateKey) | NA     | MongoDB cloud private API key.
+MongoDB Atlas project ID (AtlasProjectID)  | NA | MongoDB Atlas project ID
+
+*Table2. MongoDB Trigger parameters.*
+
+Parameter label (name)                           | Default value | Description
+------------------------------------------ | ------------- | -------------
+Activate MongoDB Atlas Trigger CloudFormation Resource (ActivateMongoDBTriggerResource) | NA | Activate MongoDB Atlas Trigger CloudFormation Resource
+Database name for the trigger (DatabaseName) | NA | Database name for the trigger
+Collection name for the trigger (CollectionName) | NA | Collection name for the trigger
+Realm Service ID (ServiceID) | NA | Realm Service ID
+Realm App ID (RealmAppID) | NA | Realm App ID
+
+*Table 3. SageMaker parameters.*
+
+Parameter label (name)                           | Default value | Description
+------------------------------------------ | ------------- | -------------
+Model Artifacts S3 URI (ModelDataS3URL) | NA | The S3 path where the model artifacts, which result from model training, are stored. This path must point to a single gzip compressed tar archive (.tar.gz suffix).
+Model ECR Image URI (ModelECRImageURI) | NA | AWS managed Deep Learning Container Image URI or your custom Image URI from ECR to deploy and run the model.
+
+*Table 4. Lambda parameters.*
+
+Parameter label (name)                           | Default value | Description
+------------------------------------------ | ------------- | -------------
+Pull Lambda ECR Image URI (PullLambdaECRImageURI) | NA | ECR image URI of the Lambda function to read MongoDB events from EventBridge.
+Push Lambda ECR Image URI (PushLambdaECRImageURI) | NA | ECR image URI of the Lambda function to write results back to MongoDB.
+
+=== FAQ
+
+Q. I encountered a CREATE_FAILED error when I launched the Quick Start.
+
+A. If AWS CloudFormation fails to create the stack, we recommend to check the error messages logged for each failed resource. Please check if all the parameters are valid, all the ECR image URIs are in the same region etc.
+
+Q. Pull or Push Lambda unable to process events.
+
+A. Check if event rule has proper event patterns. Update the event rules according to your requirements.
+
+Q. SageMaker results are inappropriate.
+
+A. Check if all the model artifacts are upload to S3 and S3 link is valid. Update the inference filename in the template if filename is other than inference.py.
