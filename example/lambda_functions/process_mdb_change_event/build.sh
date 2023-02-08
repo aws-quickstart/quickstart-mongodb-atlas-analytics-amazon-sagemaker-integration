@@ -1,8 +1,8 @@
 #! /bin/bash
 
 # Change these variables according to your configuration.
-profile=serverless-admin
-region=us-west-2
+profile=default
+region=us-east-1
 repo_name=process-mdb-change-event
 
 # Get AWS account ID.
@@ -37,4 +37,4 @@ docker build -q -t "${repo_name}" .
 docker tag "${repo_name}" "${full_name}"
 docker push "${full_name}"
 
-printf "\nECR Image URI: %s\n\n" ${full_name}
+printf "\nPullLambdaECRImageURI: %s\n\n" ${full_name}

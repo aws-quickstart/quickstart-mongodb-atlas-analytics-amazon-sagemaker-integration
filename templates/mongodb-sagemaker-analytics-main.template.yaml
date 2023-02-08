@@ -22,7 +22,7 @@ Metadata:
       - Label:
           default: SageMaker configuration
         Parameters:
-          - ModelDataS3URL
+          - ModelDataS3URI
           - ModelECRImageURI
       - Label:
           default: Lambda configuration
@@ -31,12 +31,11 @@ Metadata:
           - PushLambdaECRImageURI
           - MongoEndpoint
       - Label:
-          default: AWS Quick Start configuration
+          default: Activate MongoDB trigger resource configuration
         Parameters:
           - ActivateMongoDBTriggerResource
           - QSS3BucketName
           - QSS3KeyPrefix
-          - QSS3BucketRegion
     ParameterLabels:
       PublicKey:
         default: MongoDB Atlas API public key
@@ -52,7 +51,7 @@ Metadata:
         default: Realm Service ID
       RealmAppID:
         default: Realm App ID
-      ModelDataS3URL:
+      ModelDataS3URI:
         default: ML Model Artifacts S3 URI
       ModelECRImageURI:
         default: Model ECR Image URI
@@ -70,31 +69,29 @@ Metadata:
 Parameters:
   # MongoDB Trigger parameters.
   PublicKey:
-    Description: "Your MongoDB Cloud Public API Key"
+    Description: Your MongoDB Cloud Public API Key.
     Type: String
   PrivateKey:
-    Description: "Your MongoDB Cloud Private API Key"
+    Description: Your MongoDB Cloud Private API Key.
     Type: String
   AtlasProjectID:
     Description: Atlas Project ID.
     Type: String
   DatabaseName:
-    Description: Database name to create a trigger on.
+    Description: Database name for the trigger.
     Type: String
-    Default: "Vehicles"
   CollectionName:
-    Description: Collection name to create a trigger on.
+    Description: Collection name for the trigger.
     Type: String
-    Default: "Component"
   ServiceID:
-    Description: Service ID.
+    Description: Realm Service ID.
     Type: String
   RealmAppID:
     Description: Realm App ID.
     Type: String
 
   # SageMaker parameters.
-  ModelDataS3URL:
+  ModelDataS3URI:
     Description: The S3 path where the model artifacts, which result from model training, are stored. This path must point to a single gzip compressed tar archive (.tar.gz suffix).
     Type: String
   ModelECRImageURI:
@@ -109,7 +106,7 @@ Parameters:
     Description: ECR image URI of the Lambda function to write results back to MongoDB.
     Type: String
   MongoEndpoint:
-    Description: "Your MongoDB endpoint to push results by Lambda function"
+    Description: Your MongoDB endpoint to push results by Lambda function.
     Type: String
 
   # Activate MongoDB resource parameters.
@@ -137,7 +134,7 @@ Parameters:
     ConstraintDescription:
       Quick Start key prefix can include numbers, lowercase letters,
       uppercase letters, hyphens (-), and forward slashes (/).
-    Default: quickstart-mongodb-atlas-analytics-amazon-sagemaker-integration/
+    Default: quickstart-mongodb-atlas-analytics-amazon-sagemaker-integration
     Description:
       S3 key prefix for the Quick Start assets. Quick Start key prefix
       can include numbers, lowercase letters, uppercase letters, hyphens (-), and
@@ -155,7 +152,7 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: !Sub
-        - "https://${S3Bucket}.s3.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/activate-mongodb-atlas-resources.template.yaml"
+        - "https://${S3Bucket}.s3.${AWS::URLSuffix}/${QSS3KeyPrefix}/templates/activate-mongodb-atlas-resources.template.yaml"
         - S3Bucket:
             !If [
               UsingDefaultBucket,
@@ -173,7 +170,7 @@ Resources:
         - ""
     Properties:
       TemplateURL: !Sub
-        - "https://${S3Bucket}.s3.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/mongodb-sagemaker-analytics.template.yaml"
+        - "https://${S3Bucket}.s3.${AWS::URLSuffix}/${QSS3KeyPrefix}/templates/mongodb-sagemaker-analytics.template.yaml"
         - S3Bucket:
             !If [
               UsingDefaultBucket,
@@ -188,7 +185,7 @@ Resources:
         CollectionName: !Ref CollectionName
         ServiceID: !Ref ServiceID
         RealmAppID: !Ref RealmAppID
-        ModelDataS3URL: !Ref ModelDataS3URL
+        ModelDataS3URI: !Ref ModelDataS3URI
         ModelECRImageURI: !Ref ModelECRImageURI
         PullLambdaECRImageURI: !Ref PullLambdaECRImageURI
         PushLambdaECRImageURI: !Ref PushLambdaECRImageURI

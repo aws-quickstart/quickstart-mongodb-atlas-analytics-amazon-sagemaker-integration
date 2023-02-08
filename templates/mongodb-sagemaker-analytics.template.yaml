@@ -9,28 +9,27 @@ Metadata:
     Order: "1"
   AWS::CloudFormation::Interface:
     ParameterGroups:
-    - Label:
-        default: MongoDB Trigger configuration
-      Parameters:
-      - PublicKey
-      - PrivateKey
-      - AtlasProjectID
-      - DatabaseName
-      - CollectionName
-      - ServiceID
-      - RealmAppID
-    - Label:
-        default: SageMaker configuration
-      Parameters:
-      - ModelDataS3URL
-      - ModelECRImageURI
-    - Label:
-        default: Lambda configuration
-      Parameters:
-      - PullLambdaECRImageURI
-      - PushLambdaECRImageURI
-      - MongoEndpoint
-
+      - Label:
+          default: MongoDB Trigger configuration
+        Parameters:
+        - PublicKey
+        - PrivateKey
+        - AtlasProjectID
+        - DatabaseName
+        - CollectionName
+        - ServiceID
+        - RealmAppID
+      - Label:
+          default: SageMaker configuration
+        Parameters:
+        - ModelDataS3URI
+        - ModelECRImageURI
+      - Label:
+          default: Lambda configuration
+        Parameters:
+        - PullLambdaECRImageURI
+        - PushLambdaECRImageURI
+        - MongoEndpoint
     ParameterLabels:
       PublicKey:
         default: MongoDB Atlas API public key
@@ -46,7 +45,7 @@ Metadata:
         default: Realm Service ID
       RealmAppID:
         default: Realm App ID
-      ModelDataS3URL:
+      ModelDataS3URI:
         default: ML Model Artifacts S3 URI
       ModelECRImageURI:
         default: Model ECR Image URI
@@ -56,25 +55,22 @@ Metadata:
         default: Push Lambda ECR Image URI
 
 Parameters:
-
   # MongoDB Trigger parameters.
   PublicKey:
-    Description: "Your MongoDB Cloud Public API Key"
+    Description: Your MongoDB Cloud Public API Key.
     Type: String
   PrivateKey:
-    Description: "Your MongoDB Cloud Private API Key"
+    Description: Your MongoDB Cloud Private API Key.
     Type: String
   AtlasProjectID:
     Description: Atlas Project ID.
     Type: String
   DatabaseName:
-    Description: Database name to create a trigger on.
+    Description: Database name for the trigger.
     Type: String
-    Default: "Vehicles"
   CollectionName:
-    Description: Collection name to create a trigger on.
+    Description: Collection name for the trigger.
     Type: String
-    Default: "Component"
   ServiceID:
     Description: Service ID.
     Type: String
@@ -83,7 +79,7 @@ Parameters:
     Type: String
 
 # SageMaker parameters.
-  ModelDataS3URL:
+  ModelDataS3URI:
     Description: The S3 path where the model artifacts, which result from model training, are stored. This path must point to a single gzip compressed tar archive (.tar.gz suffix).
     Type: String
   ModelECRImageURI:
@@ -98,17 +94,16 @@ Parameters:
     Description: ECR image URI of the Lambda function to write results back to MongoDB.
     Type: String
   MongoEndpoint:
-    Description: "Your MongoDB endpoint to push results by Lambda function"
+    Description: Your MongoDB endpoint to push results by Lambda function.
     Type: String
 
 Resources:
-
 # MongoDB resources.
   # Create MongoDB Atlas Trigger with AWS EventBridge as event processor.
   EventTrigger:
     Type: MongoDB::Atlas::Trigger
     Properties:
-      Name: !Sub "mdb-sm-trigger"
+      Name: !Sub "qs-mdb-trigger"
       Type: DATABASE
       DatabaseTrigger:
         OperationTypes:
@@ -152,15 +147,14 @@ Resources:
         - !Sub 'arn:${AWS::Partition}:iam::aws:policy/AmazonSageMakerCanvasFullAccess'
       Policies:
         -
-          PolicyName: sagemaker-execution-policy
+          PolicyName: qs-sagemaker-execution-policy
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
               -
                 Effect: Allow
-                Action:
-                  - s3:GetObject
-                Resource: !Join [ "", [ 'arn:', !Ref AWS::Partition, ':s3:::*' ] ]
+                Action: s3:GetObject
+                Resource: !Sub 'arn:${AWS::Partition}:s3:::*'
 
   # Create SageMaker model using ECR image URI and ML model artifacts S3 URI.
   Model:
@@ -169,9 +163,9 @@ Resources:
       Containers:
         -
           Image: !Ref ModelECRImageURI
-          ModelDataUrl: !Ref ModelDataS3URL
+          ModelDataUrl: !Ref ModelDataS3URI
           Mode: SingleModel
-          Environment: {"SAGEMAKER_PROGRAM": "inference.py", "SAGEMAKER_SUBMIT_DIRECTORY": !Ref ModelDataS3URL}
+          Environment: {"SAGEMAKER_PROGRAM": "inference.py", "SAGEMAKER_SUBMIT_DIRECTORY": !Ref ModelDataS3URI}
       ExecutionRoleArn: !GetAtt SageMakerExecutionRole.Arn
 
   # Create Endpoint Config with required instance type.
@@ -192,6 +186,7 @@ Resources:
       EndpointConfigName:
         !GetAtt EndpointConfig.EndpointConfigName
 
+# Event buses
   # Event bus for capturing MongoDB change events.
   EventBusForCapturingMDBEvents:
     Type: AWS::Events::EventBus
@@ -203,7 +198,7 @@ Resources:
   EventBusForSageMakerResults:
     Type: AWS::Events::EventBus
     Properties:
-      Name: mongodb-sagemaker-results
+      Name: qs-mongodb-sagemaker-results
 
 # Lambda functions
   # Lambda function to read events from EventBridge (PULL).
@@ -226,7 +221,7 @@ Resources:
       MemorySize: 1024
       Timeout: 300
 
-    # Lambda role required to invoke SageMaker endpoint and write results to event bus.
+  # Lambda role required to invoke SageMaker endpoint and write results to event bus.
   PullLambdaFunctionRole:
     Type: AWS::IAM::Role
     Properties:
@@ -251,11 +246,11 @@ Resources:
               -
                 Effect: Allow
                 Action: sagemaker:InvokeEndpoint
-                Resource: "*"
+                Resource: !Ref Endpoint
               -
                 Effect: Allow
                 Action: events:PutEvents
-                Resource: !Sub 'arn:${AWS::Partition}:events:${AWS::Region}:${AWS::AccountId}:event-bus/${EventBusForSageMakerResults.Name}'
+                Resource: !GetAtt EventBusForSageMakerResults.Arn
 
   # Lambda function to write data to MongoDB.
   LambdaFunctionToWriteToMDB:
@@ -292,7 +287,7 @@ Resources:
       ManagedPolicyArns:
         - !Sub 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
 
-# EventBridge resources.
+# Event rules.
   # Event rule to match MongoDB change events based on account ID.
   EventRuleToMatchMDBEvents:
     Type: AWS::Events::Rule

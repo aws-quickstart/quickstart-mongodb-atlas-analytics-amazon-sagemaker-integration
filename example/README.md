@@ -1,19 +1,27 @@
-# Steps to Launch Example
+# Iris Flower Classification Example - Steps to Launch Solution
+
+## Prerequisites
+
+- Docker up and running
+- AWS CLI
+- Python 3
 
 ## Upload Model Artifacts to S3
+
+**Note**: Update `profile_name` and `region_name` in `example/iris_classifier/upload.py` if you are not using AWS `default` profile.
 
 ```bash
 $ cd example/iris_classifier
 $ python3 upload.py
 
 # Output
-S3 URI: s3://sagemaker-ap-south-1-166187639221/model.tar.gz
-SageMaker Docker Image URI: 720646828776.dkr.ecr.ap-south-1.amazonaws.com/sagemaker-scikit-learn:0.23-1-cpu-py3
+ModelDataS3URI: s3://sagemaker-ap-south-1-166187639221/model.tar.gz
+ModelECRImageURI: 720646828776.dkr.ecr.ap-south-1.amazonaws.com/sagemaker-scikit-learn:0.23-1-cpu-py3
 ```
 
 ## Build and Push Lambda Functions
 
-**Note**: Make sure Docker is up and running.
+**Note**: Make sure Docker is up and running. Update `profile` and `region` in `example/lambda_functions/process_mdb_change_event/build.sh` and `example/lambda_functions/process_result/build.sh` if you are not using AWS `default` profile.
 
 ### Pull Lambda (Reads MongoDB Change Events)
 
@@ -35,7 +43,7 @@ add489bc36b0: Pushed
 b2c122fc6a0b: Pushed
 latest: digest: sha256:299589ce12e3983177f1b6ab78324f241cbf496ae6adb4fd558db8d81280f2da size: 2002
 
-ECR Image URI: 166187639221.dkr.ecr.ap-south-1.amazonaws.com/process-mdb-change-event:latest
+PullLambdaECRImageURI: 166187639221.dkr.ecr.ap-south-1.amazonaws.com/process-mdb-change-event:latest
 ```
 
 ### Push Lambda (Writes Results to MongoDB)
@@ -58,7 +66,7 @@ add489bc36b0: Pushed
 b2c122fc6a0b: Pushed
 latest: digest: sha256:b8a0060e5358a7713ee18554d5543a68902171b39728ff131a14de9c4ab3f093 size: 2000
 
-ECR Image URI: 166187639221.dkr.ecr.ap-south-1.amazonaws.com/process-result:latest
+PushLambdaECRImageURI: 166187639221.dkr.ecr.ap-south-1.amazonaws.com/process-result:latest
 ```
 
 ## Create MongoDB Cluster
@@ -85,7 +93,7 @@ Here are the direct links to API documentation for creating an App and a Service
 
 ## Launch the Solution
 
-Finally execute the CloudFormation template `mongodb-sagemaker-analytics-main.template.yaml` with the valid parameters.
+Finally execute the CloudFormation template `templates/mongodb-sagemaker-analytics-main.template.yaml` with the valid parameters.
 
 ### Testing
 
