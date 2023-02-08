@@ -1,0 +1,40 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: MongoDB Resource activation. (qs-1trcrtan9)
+
+Metadata:
+  cfn-lint: { config: { ignore_checks: [ W9002, W9003, W9006, E3001, E1010 ] } }
+
+Resources:
+  # Activate MongoDB Trigger resource.
+  ActivateTrigger:
+    Type: AWS::CloudFormation::TypeActivation
+    Properties:
+      PublicTypeArn: !Sub 'arn:${AWS::Partition}:cloudformation:${AWS::Region}::type/resource/bb989456c78c398a858fef18f2ca1bfc1fbba082/MongoDB-Atlas-Trigger'
+      Type: RESOURCE
+      TypeName: MongoDB::Atlas::Trigger
+      ExecutionRoleArn: !GetAtt MongoDBCustomResourceExecutionRole.Arn
+
+  # Role to activate resource.
+  MongoDBCustomResourceExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      MaxSessionDuration: 8400
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - "resources.cloudformation.amazonaws.com"
+            Action: sts:AssumeRole
+      Path: "/"
+      Policies:
+        - PolicyName: ResourceTypePolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Deny
+                Action:
+                  - "*"
+                Resource: "*"

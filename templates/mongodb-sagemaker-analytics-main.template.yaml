@@ -1,0 +1,206 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Quickstart CloudFormation template to integrate MongoDB Atlas with Amazon Sagemaker for Analytics (qs-1trcrtan9)
+
+Metadata:
+  cfn-lint: { config: { ignore_checks: [W9002, W9003, W9006, E3001, E1010] } }
+  QuickStartDocumentation:
+    EntrypointName: "Parameters for deploying MongoDB Trigger, Amazon SageMaker, AWS EventBridge and Lambda functions"
+    Order: "1"
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: MongoDB Trigger configuration
+        Parameters:
+          - PublicKey
+          - PrivateKey
+          - AtlasProjectID
+          - DatabaseName
+          - CollectionName
+          - ServiceID
+          - RealmAppID
+      - Label:
+          default: SageMaker configuration
+        Parameters:
+          - ModelDataS3URL
+          - ModelECRImageURI
+      - Label:
+          default: Lambda configuration
+        Parameters:
+          - PullLambdaECRImageURI
+          - PushLambdaECRImageURI
+          - MongoEndpoint
+      - Label:
+          default: AWS Quick Start configuration
+        Parameters:
+          - ActivateMongoDBTriggerResource
+          - QSS3BucketName
+          - QSS3KeyPrefix
+          - QSS3BucketRegion
+    ParameterLabels:
+      PublicKey:
+        default: MongoDB Atlas API public key
+      PrivateKey:
+        default: MongoDB Atlas API private key
+      AtlasProjectID:
+        default: MongoDB Atlas project ID
+      DatabaseName:
+        default: Database name for the trigger
+      CollectionName:
+        default: Collection name for the trigger
+      ServiceID:
+        default: Realm Service ID
+      RealmAppID:
+        default: Realm App ID
+      ModelDataS3URL:
+        default: ML Model Artifacts S3 URI
+      ModelECRImageURI:
+        default: Model ECR Image URI
+      PullLambdaECRImageURI:
+        default: Pull Lambda ECR Image URI
+      PushLambdaECRImageURI:
+        default: Push Lambda ECR Image URI
+      ActivateMongoDBTriggerResource:
+        default: Activate MongoDB Atlas Trigger CloudFormation Resource
+      QSS3BucketName:
+        default: Quick Start S3 bucket name
+      QSS3KeyPrefix:
+        default: Quick Start S3 key prefix
+
+Parameters:
+  # MongoDB Trigger parameters.
+  PublicKey:
+    Description: "Your MongoDB Cloud Public API Key"
+    Type: String
+  PrivateKey:
+    Description: "Your MongoDB Cloud Private API Key"
+    Type: String
+  AtlasProjectID:
+    Description: Atlas Project ID.
+    Type: String
+  DatabaseName:
+    Description: Database name to create a trigger on.
+    Type: String
+    Default: "Vehicles"
+  CollectionName:
+    Description: Collection name to create a trigger on.
+    Type: String
+    Default: "Component"
+  ServiceID:
+    Description: Service ID.
+    Type: String
+  RealmAppID:
+    Description: Realm App ID.
+    Type: String
+
+  # SageMaker parameters.
+  ModelDataS3URL:
+    Description: The S3 path where the model artifacts, which result from model training, are stored. This path must point to a single gzip compressed tar archive (.tar.gz suffix).
+    Type: String
+  ModelECRImageURI:
+    Description: AWS managed Deep Learning Container Image URI or your custom Image URI from ECR to deploy and run the model.
+    Type: String
+
+  # Lambda parameters.
+  PullLambdaECRImageURI:
+    Description: ECR image URI of the Lambda function to read MongoDB events from EventBridge.
+    Type: String
+  PushLambdaECRImageURI:
+    Description: ECR image URI of the Lambda function to write results back to MongoDB.
+    Type: String
+  MongoEndpoint:
+    Description: "Your MongoDB endpoint to push results by Lambda function"
+    Type: String
+
+  # Activate MongoDB resource parameters.
+  ActivateMongoDBTriggerResource:
+    Description: 'Choose "Yes" to activate MongoDB Atlas Trigger CloudFormation resource. If you already activated it in your AWS Region, enter "No."'
+    Type: String
+    Default: "Yes"
+    AllowedValues:
+      - "No"
+      - "Yes"
+  QSS3BucketName:
+    AllowedPattern: ^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$
+    ConstraintDescription:
+      Quick Start bucket name can include numbers, lowercase
+      letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen
+      (-).
+    Default: aws-quickstart
+    Description:
+      S3 bucket name for the Quick Start assets. This string can include
+      numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start
+      or end with a hyphen (-).
+    Type: String
+  QSS3KeyPrefix:
+    AllowedPattern: ^[0-9a-zA-Z-/.]*$
+    ConstraintDescription:
+      Quick Start key prefix can include numbers, lowercase letters,
+      uppercase letters, hyphens (-), and forward slashes (/).
+    Default: quickstart-mongodb-atlas-analytics-amazon-sagemaker-integration/
+    Description:
+      S3 key prefix for the Quick Start assets. Quick Start key prefix
+      can include numbers, lowercase letters, uppercase letters, hyphens (-), and
+      forward slashes (/).
+    Type: String
+
+Conditions:
+  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, "aws-quickstart"]
+  ActivateResources: !Equals [!Ref ActivateMongoDBTriggerResource, "Yes"]
+
+Resources:
+  # Activate MongoDB resources.
+  ActivateAtlasResources:
+    Condition: ActivateResources
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub
+        - "https://${S3Bucket}.s3.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/activate-mongodb-atlas-resources.template.yaml"
+        - S3Bucket:
+            !If [
+              UsingDefaultBucket,
+              !Sub "${QSS3BucketName}",
+              !Ref QSS3BucketName,
+            ]
+
+  # Create resources for MongoDB and SageMaker analytics.
+  AnalyticsStack:
+    Type: AWS::CloudFormation::Stack
+    Metadata:
+      PseudoDependsOn: !If
+        - ActivateResources
+        - - !Ref ActivateAtlasResources
+        - ""
+    Properties:
+      TemplateURL: !Sub
+        - "https://${S3Bucket}.s3.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/mongodb-sagemaker-analytics.template.yaml"
+        - S3Bucket:
+            !If [
+              UsingDefaultBucket,
+              !Sub "${QSS3BucketName}",
+              !Ref QSS3BucketName,
+            ]
+      Parameters:
+        PublicKey: !Ref PublicKey
+        PrivateKey: !Ref PrivateKey
+        AtlasProjectID: !Ref AtlasProjectID
+        DatabaseName: !Ref DatabaseName
+        CollectionName: !Ref CollectionName
+        ServiceID: !Ref ServiceID
+        RealmAppID: !Ref RealmAppID
+        ModelDataS3URL: !Ref ModelDataS3URL
+        ModelECRImageURI: !Ref ModelECRImageURI
+        PullLambdaECRImageURI: !Ref PullLambdaECRImageURI
+        PushLambdaECRImageURI: !Ref PushLambdaECRImageURI
+        MongoEndpoint: !Ref MongoEndpoint
+
+Outputs:
+  EventTriggerID:
+    Description: "Event Trigger ID."
+    Value: !GetAtt "AnalyticsStack.Outputs.EventTriggerID"
+  SageMakerEndpointARN:
+    Description: "SageMaker endpoint ARN."
+    Value: !GetAtt "AnalyticsStack.Outputs.SageMakerEndpointARN"
+  EventBusName:
+    Description: "Event Bus name."
+    Value: !GetAtt "AnalyticsStack.Outputs.EventBusName"
