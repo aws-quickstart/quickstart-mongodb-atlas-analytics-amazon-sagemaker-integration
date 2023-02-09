@@ -36,6 +36,7 @@ Metadata:
           - ActivateMongoDBTriggerResource
           - QSS3BucketName
           - QSS3KeyPrefix
+          - QSS3BucketRegion
     ParameterLabels:
       PublicKey:
         default: MongoDB Atlas API public key
@@ -65,6 +66,8 @@ Metadata:
         default: Quick Start S3 bucket name
       QSS3KeyPrefix:
         default: Quick Start S3 key prefix
+      QSS3BucketRegion:
+        default: Quick Start S3 bucket Region
 
 Parameters:
   # MongoDB Trigger parameters.
@@ -140,6 +143,11 @@ Parameters:
       can include numbers, lowercase letters, uppercase letters, hyphens (-), and
       forward slashes (/).
     Type: String
+  QSS3BucketRegion:
+    Default: "us-east-1"
+    Description: AWS Region where the Quick Start S3 bucket (QSS3BucketName) is
+      hosted. If you use your own bucket, you must specify this value.
+    Type: String
 
 Conditions:
   UsingDefaultBucket: !Equals [!Ref QSS3BucketName, "aws-quickstart"]
@@ -152,11 +160,13 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: !Sub
-        - "https://${S3Bucket}.s3.${AWS::URLSuffix}/${QSS3KeyPrefix}/templates/activate-mongodb-atlas-resources.template.yaml"
-        - S3Bucket:
+        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}/templates/activate-mongodb-atlas-resources.template.yaml"
+        - S3Region:
+            !If [UsingDefaultBucket, !Ref "AWS::Region", !Ref QSS3BucketRegion]
+          S3Bucket:
             !If [
               UsingDefaultBucket,
-              !Sub "${QSS3BucketName}",
+              !Sub "${QSS3BucketName}-${AWS::Region}",
               !Ref QSS3BucketName,
             ]
 
@@ -170,11 +180,13 @@ Resources:
         - ""
     Properties:
       TemplateURL: !Sub
-        - "https://${S3Bucket}.s3.${AWS::URLSuffix}/${QSS3KeyPrefix}/templates/mongodb-sagemaker-analytics.template.yaml"
-        - S3Bucket:
+        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}/templates/mongodb-sagemaker-analytics.template.yaml"
+        - S3Region:
+            !If [UsingDefaultBucket, !Ref "AWS::Region", !Ref QSS3BucketRegion]
+          S3Bucket:
             !If [
               UsingDefaultBucket,
-              !Sub "${QSS3BucketName}",
+              !Sub "${QSS3BucketName}-${AWS::Region}",
               !Ref QSS3BucketName,
             ]
       Parameters:
