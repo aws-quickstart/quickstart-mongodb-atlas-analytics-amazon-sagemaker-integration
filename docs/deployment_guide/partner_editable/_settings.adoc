@@ -2,12 +2,12 @@
 :partner-solution-github-org: aws-quickstart
 :partner-product-name: Analytics with MongoDB Atlas and Amazon SageMaker
 :partner-product-short-name: Analytics with MongoDB Atlas and Amazon SageMaker
-:partner-company-name: AWS
+:partner-company-name: MongoDB Inc.
 :doc-month: February
 :doc-year: 2023
-:partner-contributors: John Smith, {partner-company-name}
+:partner-contributors: {partner-company-name}
 // :other-contributors: Akua Mansa, Trek10
-:aws-contributors: Janine Singh, AWS IoT Partner team
+//:aws-contributors: Janine Singh, AWS IoT Partner team
 :aws-ia-contributors: Vinod Shukla, AWS Integration & Automation team
 :deployment_time: 10-20 minutes
 :default_deployment_region: us-east-1

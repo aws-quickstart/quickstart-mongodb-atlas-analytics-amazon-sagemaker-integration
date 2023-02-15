@@ -2,4 +2,4 @@
 
 There is no cost to use this Partner Solution, but you will be billed for any AWS services or resources that this Partner Solution deploys. For more information, refer to the https://fwd.aws/rA69w?[AWS Partner Solution General Information Guide^].
 
-This Partner Solution deploys MongoDB Atlas Resources with the latest stable MongoDB enterprise version, which is licensed and distributed under the https://www.mongodb.com/licensing/server-side-public-license[Server Side Public License (SSPL)^].
+This Partner Solution deploys MongoDB Atlas resources with the latest stable MongoDB enterprise version, which is licensed and distributed under the https://www.mongodb.com/licensing/server-side-public-license[Server Side Public License (SSPL)^].

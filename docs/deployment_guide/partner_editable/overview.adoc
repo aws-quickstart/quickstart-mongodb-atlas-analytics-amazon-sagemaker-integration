@@ -1,6 +1,4 @@
-This guide covers the information you need to deploy the {partner-product-name} Partner Solution in the AWS Cloud.
-
-This quickstart helps you deploy MongoDB Atlas Cluster and Amazon SageMaker Endpoint with other required AWS resources to quickly start working with your Machine Learning models with MongoDB as data source and Amazon SageMaker for the data analysis.
+This Partner Solution helps you deploy MongoDB Atlas Cluster and Amazon SageMaker Endpoint with other required AWS resources to quickly start working with your Machine Learning models with MongoDB as data source and Amazon SageMaker for the data analysis.
 
 // For advanced information about the product, troubleshooting, or additional functionality, refer to the https://{partner-solution-github-org}.github.io/{partner-solution-project-name}/operational/index.html[Operational Guide^].
 

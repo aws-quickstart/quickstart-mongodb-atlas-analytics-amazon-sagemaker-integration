@@ -6,19 +6,3 @@
 
 Testing the solution involves inserting records into MongoDB collection manually or through any application and observe results in the target collection.
 
-=== Best practices for using {partner-product-short-name} on AWS
-
-There are many considerations for production-grade deployments. While this Partner Solution demonstrates some of these, such as database-user security and peering, see https://docs.atlas.mongodb.com/best-practices/[Atlas Production Best Practices^] for the latest information.
-
-Choosing the correct Atlas cluster tier and configuration is an important step in setting up a successful production MongoDB deployment. You can always modify a cluster at a later time, but getting started with the right configuration is possible with a few calculations based on your data set size and network requirements. For more information, see https://docs.atlas.mongodb.com/production-considerations/[MongoDB Atlas Production Considerations^].
-
-=== Security
-
-This Partner Solution provisions a cluster with security and TLS enabled by default. Optionally, network peering can be enabled on a new or existing AWS VPC. For more information, see https://docs.atlas.mongodb.com/setup-cluster-security/[MongoDB Security Features and Setup^].
-
-If you plan to use AWS Lambda, ensure that you follow the recommendations from https://docs.atlas.mongodb.com/best-practices-connecting-to-aws-lambda/[Best Practices Connecting from AWS Lambda^].
-
-
-=== MongoDB Atlas CloudFormation resource reference
-
-- *MongoDB::Atlas::Trigger* — Database Triggers allow you to execute server-side logic or sending events to third-party services using AWS EventBridge whenever a document is added, updated, or removed in a linked MongoDB Atlas cluster
