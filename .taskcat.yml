@@ -24,7 +24,4 @@ tests:
       QSS3BucketName: $[taskcat_autobucket]
       QSS3BucketRegion: $[taskcat_current_region]
       QSS3KeyPrefix: quickstart-mongodb-atlas-analytics-amazon-sagemaker-integration/
-      ProjectName: tcat-$[taskcat_random-string]-$[taskcat_current_region]
-      QSS3BucketName: $[taskcat_autobucket]
-      QSS3BucketRegion: $[taskcat_current_region]
     template: templates/mongodb-sagemaker-analytics-main.template.yaml
