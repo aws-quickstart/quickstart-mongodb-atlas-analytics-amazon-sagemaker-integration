@@ -4,7 +4,7 @@
 
 === Prepare your AWS Account
 
-This Partner Solution uses MongoDB Atlas CloudFormation resource types and automatically registers them in the AWS Region of your choice. Once it's running, you can safely skip this step for additional deployments in each Region by setting the `RegisterMongoDBResources` parameter to **No**.
+This Partner Solution uses MongoDB Atlas CloudFormation resource types and automatically registers the `MongoDB::Atlas::Trigger` resource in the AWS Region of your choice. Once it's running, you can safely skip this step for additional deployments in each Region by setting the `ActivateMongoDBTriggerResource` parameter to **No**.
 
 === Prepare your MongoDB Inc. Account
 
