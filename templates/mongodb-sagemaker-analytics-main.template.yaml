@@ -19,6 +19,7 @@ Metadata:
           - CollectionName
           - ServiceID
           - RealmAppID
+          - ActivateMongoDBTriggerResource
       - Label:
           default: SageMaker configuration
         Parameters:
@@ -31,9 +32,8 @@ Metadata:
           - PushLambdaECRImageURI
           - MongoEndpoint
       - Label:
-          default: Activate MongoDB trigger resource configuration
+          default: Partner Solution configuration
         Parameters:
-          - ActivateMongoDBTriggerResource
           - QSS3BucketName
           - QSS3KeyPrefix
           - QSS3BucketRegion
@@ -121,32 +121,39 @@ Parameters:
       - "No"
       - "Yes"
   QSS3BucketName:
-    AllowedPattern: ^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$
-    ConstraintDescription:
-      Quick Start bucket name can include numbers, lowercase
-      letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen
-      (-).
+    AllowedPattern: ^[0-9a-z]+([0-9a-z-\.]*[0-9a-z])*$
+    ConstraintDescription: >-
+      The S3 bucket name can include numbers, lowercase letters,
+      and hyphens (-), but it cannot start or end with a hyphen.
     Default: aws-quickstart
-    Description:
-      S3 bucket name for the Quick Start assets. This string can include
-      numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start
-      or end with a hyphen (-).
-    Type: String
-  QSS3KeyPrefix:
-    AllowedPattern: ^[0-9a-zA-Z-/.]*$
-    ConstraintDescription:
-      Quick Start key prefix can include numbers, lowercase letters,
-      uppercase letters, hyphens (-), and forward slashes (/).
-    Default: quickstart-mongodb-atlas-analytics-amazon-sagemaker-integration
-    Description:
-      S3 key prefix for the Quick Start assets. Quick Start key prefix
-      can include numbers, lowercase letters, uppercase letters, hyphens (-), and
-      forward slashes (/).
+    Description: >-
+      Name of the S3 bucket for your copy of the deployment assets. Keep the default
+      name unless you are customizing the template. Changing the name updates code
+      references to point to a new location.
+    MinLength: 3
+    MaxLength: 63
     Type: String
   QSS3BucketRegion:
-    Default: "us-east-1"
-    Description: AWS Region where the Quick Start S3 bucket (QSS3BucketName) is
-      hosted. If you use your own bucket, you must specify this value.
+    Default: us-east-1
+    Description: >-
+      AWS Region where the S3 bucket (QSS3BucketName) is hosted. Keep
+      the default Region unless you are customizing the template. Changing the Region
+      updates code references to point to a new location. When using your own bucket,
+      specify the Region.
+    Type: String
+  QSS3KeyPrefix:
+    AllowedPattern: ^([0-9a-zA-Z!-_\.\*'\(\)/]+/)*$
+    ConstraintDescription: >-
+      The S3 key prefix can include numbers, lowercase letters, uppercase letters,
+      hyphens (-), underscores (_), periods (.), asterisks (*), single quotes ('),
+      open parenthesis ((), close parenthesis ()), and forward slashes (/). End the
+      prefix with a forward slash.
+    Default: quickstart-inductive-automation-ignition/
+    Description: >-
+      S3 key prefix that is used to simulate a folder for your copy of the
+      deployment assets. Keep the default prefix unless you are customizing
+      the template. Changing the prefix updates code references to point to
+      a new location.
     Type: String
 
 Conditions:
