@@ -103,7 +103,7 @@ Resources:
   EventTrigger:
     Type: MongoDB::Atlas::Trigger
     Properties:
-      Name: !Sub "qs-mdb-trigger"
+      Name: !Sub "qs-mdb-trigger-${AWS::AccountId}-${AWS::Region}-${AWS::StackName}"
       Type: DATABASE
       DatabaseTrigger:
         OperationTypes:
@@ -207,7 +207,6 @@ Resources:
     DependsOn: EventBusForCapturingMDBEvents
     Properties:
       PackageType: Image
-      FunctionName: !Sub "qs-read-from-mdb"
       Role: !GetAtt PullLambdaFunctionRole.Arn
       Code:
         ImageUri: !Ref PullLambdaECRImageURI
@@ -257,7 +256,6 @@ Resources:
     Type: AWS::Lambda::Function
     Properties:
       PackageType: Image
-      FunctionName: !Sub "qs-write-to-mdb"
       Role: !GetAtt PushLambdaFunctionRole.Arn
       Code:
         ImageUri: !Ref PushLambdaECRImageURI
@@ -291,7 +289,6 @@ Resources:
   # Event rule to match MongoDB change events based on account ID.
   EventRuleToMatchMDBEvents:
     Type: AWS::Events::Rule
-    DependsOn: EventBusForCapturingMDBEvents
     Properties:
       Description: Event Rule to match MongoDB change events.
       EventBusName: !GetAtt EventBusForCapturingMDBEvents.Name
@@ -315,7 +312,6 @@ Resources:
   # Event rule to match SageMaker results.
   EventRuleToCaptureEventsSentFromLambdaFunction:
     Type: AWS::Events::Rule
-    DependsOn: EventBusForSageMakerResults
     Properties:
       Description: Event Rule to match result events returned by pull Lambda.
       EventBusName: !GetAtt EventBusForSageMakerResults.Name
