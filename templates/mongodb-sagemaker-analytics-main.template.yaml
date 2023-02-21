@@ -167,7 +167,7 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: !Sub
-        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}/templates/activate-mongodb-atlas-resources.template.yaml"
+        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/activate-mongodb-atlas-resources.template.yaml"
         - S3Region:
             !If [UsingDefaultBucket, !Ref "AWS::Region", !Ref QSS3BucketRegion]
           S3Bucket:
@@ -187,7 +187,7 @@ Resources:
         - ""
     Properties:
       TemplateURL: !Sub
-        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}/templates/mongodb-sagemaker-analytics.template.yaml"
+        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/mongodb-sagemaker-analytics.template.yaml"
         - S3Region:
             !If [UsingDefaultBucket, !Ref "AWS::Region", !Ref QSS3BucketRegion]
           S3Bucket:

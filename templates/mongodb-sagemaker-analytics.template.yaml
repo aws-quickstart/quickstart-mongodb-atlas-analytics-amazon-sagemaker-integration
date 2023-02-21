@@ -103,7 +103,9 @@ Resources:
   EventTrigger:
     Type: MongoDB::Atlas::Trigger
     Properties:
-      Name: !Sub "qs-mdb-trigger-${AWS::AccountId}-${AWS::Region}-${AWS::StackName}"
+      Name: !Sub
+        - 'trigger-${AWS::AccountId}-${AWS::Region}-${RandomID}'
+        - RandomID: !Select [4, !Split ["-", !Select [2, !Split ["/", !Ref AWS::StackId ]]]]
       Type: DATABASE
       DatabaseTrigger:
         OperationTypes:
