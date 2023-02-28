@@ -1,0 +1,48 @@
+general:
+  s3_regional_buckets: true
+project:
+  name: quickstart-mongodb-atlas-analytics-amazon-sagemaker-integration
+  owner: quickstart-eng@amazon.com
+  package_lambda: false
+  shorten_stack_name: true
+tests:
+  mdb-atlas-sagemaker:
+    regions:
+    - us-east-1
+    parameters:
+      AtlasProjectID: override
+      CollectionName: override
+      DatabaseName: override
+      ModelDataS3URI: override
+      ModelECRImageURI: override
+      MongoEndpoint: override
+      PrivateKey: override
+      PublicKey: override
+      PullLambdaECRImageURI: override
+      PushLambdaECRImageURI: override
+      RealmAppID: override
+      ServiceID: override
+      QSS3BucketName: $[taskcat_autobucket]
+      QSS3BucketRegion: $[taskcat_current_region]
+      QSS3KeyPrefix: quickstart-mongodb-atlas-analytics-amazon-sagemaker-integration/
+    template: templates/mongodb-sagemaker-analytics-main.template.yaml
+  mdb-atlas-sagemaker-2:
+    regions:
+    - ap-south-1
+    parameters:
+      AtlasProjectID: override
+      CollectionName: override
+      DatabaseName: override
+      ModelDataS3URI: override
+      ModelECRImageURI: override
+      MongoEndpoint: override
+      PrivateKey: override
+      PublicKey: override
+      PullLambdaECRImageURI: override
+      PushLambdaECRImageURI: override
+      RealmAppID: override
+      ServiceID: override
+      QSS3BucketName: $[taskcat_autobucket]
+      QSS3BucketRegion: $[taskcat_current_region]
+      QSS3KeyPrefix: quickstart-mongodb-atlas-analytics-amazon-sagemaker-integration/
+    template: templates/mongodb-sagemaker-analytics-main.template.yaml
