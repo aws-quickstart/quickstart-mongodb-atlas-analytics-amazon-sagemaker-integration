@@ -12,8 +12,7 @@ Metadata:
       - Label:
           default: MongoDB Trigger configuration
         Parameters:
-        - PublicKey
-        - PrivateKey
+        - Profile
         - AtlasProjectID
         - DatabaseName
         - CollectionName
@@ -31,10 +30,8 @@ Metadata:
         - PushLambdaECRImageURI
         - MongoEndpoint
     ParameterLabels:
-      PublicKey:
-        default: MongoDB Atlas API public key
-      PrivateKey:
-        default: MongoDB Atlas API private key
+      Profile:
+        default: A secret with name cfn/atlas/profile/{Profile}
       AtlasProjectID:
         default: MongoDB Atlas project ID
       DatabaseName:
@@ -56,12 +53,10 @@ Metadata:
 
 Parameters:
   # MongoDB Trigger parameters.
-  PublicKey:
-    Description: Your MongoDB Cloud Public API Key.
+  Profile:
+    Description: "A secret with name cfn/atlas/profile/{Profile}"
     Type: String
-  PrivateKey:
-    Description: Your MongoDB Cloud Private API Key.
-    Type: String
+    Default: "default"
   AtlasProjectID:
     Description: Atlas Project ID.
     Type: String
@@ -103,6 +98,7 @@ Resources:
   EventTrigger:
     Type: MongoDB::Atlas::Trigger
     Properties:
+      Profile: !Ref Profile
       Name: !Sub
         - 'trigger-${AWS::AccountId}-${AWS::Region}-${RandomID}'
         - RandomID: !Select [4, !Split ["-", !Select [2, !Split ["/", !Ref AWS::StackId ]]]]
@@ -122,11 +118,6 @@ Resources:
             ExtendedJsonEnabled: false
       AppId: !Ref RealmAppID
       ProjectId: !Ref AtlasProjectID
-      RealmConfig:
-        PublicKey: !Ref PublicKey
-        PrivateKey: !Ref PrivateKey
-        BaseURL: https://cloud.mongodb.com/api/atlas/v1.0/
-        RealmBaseURL: https://realm.mongodb.com/api/admin/v3.0/
 
 # SageMaker resources.
   # Role to create and run SageMaker model.
@@ -193,8 +184,8 @@ Resources:
   EventBusForCapturingMDBEvents:
     Type: AWS::Events::EventBus
     Properties:
-      EventSourceName: !Sub 'aws.partner/mongodb.com/stitch.trigger/${EventTrigger}'
-      Name: !Sub 'aws.partner/mongodb.com/stitch.trigger/${EventTrigger}'
+      EventSourceName: !Sub 'aws.partner/mongodb.com/stitch.trigger/${EventTrigger.Id}'
+      Name: !Sub 'aws.partner/mongodb.com/stitch.trigger/${EventTrigger.Id}'
 
   # Event bus for capturing SageMaker results.
   EventBusForSageMakerResults:
@@ -340,7 +331,7 @@ Outputs:
   # Trigger outputs.
   EventTriggerID:
     Description: "Event Trigger ID"
-    Value: !Ref "EventTrigger"
+    Value: !GetAtt EventTrigger.Id
     Export:
       Name: !Join [ "-", [ !Ref "AWS::StackName", "EventTriggerID" ] ]
 

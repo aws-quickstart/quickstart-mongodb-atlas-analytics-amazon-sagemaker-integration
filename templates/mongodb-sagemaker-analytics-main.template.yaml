@@ -12,8 +12,7 @@ Metadata:
       - Label:
           default: MongoDB Trigger configuration
         Parameters:
-          - PublicKey
-          - PrivateKey
+          - Profile
           - AtlasProjectID
           - DatabaseName
           - CollectionName
@@ -38,10 +37,8 @@ Metadata:
           - QSS3KeyPrefix
           - QSS3BucketRegion
     ParameterLabels:
-      PublicKey:
-        default: MongoDB Atlas API public key
-      PrivateKey:
-        default: MongoDB Atlas API private key
+      Profile:
+        default: A secret with name cfn/atlas/profile/{Profile}
       AtlasProjectID:
         default: MongoDB Atlas project ID
       DatabaseName:
@@ -71,12 +68,10 @@ Metadata:
 
 Parameters:
   # MongoDB Trigger parameters.
-  PublicKey:
-    Description: Your MongoDB Cloud Public API Key.
+  Profile:
+    Description: "A secret with name cfn/atlas/profile/{Profile}"
     Type: String
-  PrivateKey:
-    Description: Your MongoDB Cloud Private API Key.
-    Type: String
+    Default: "default"
   AtlasProjectID:
     Description: Atlas Project ID.
     Type: String
@@ -197,8 +192,7 @@ Resources:
               !Ref QSS3BucketName,
             ]
       Parameters:
-        PublicKey: !Ref PublicKey
-        PrivateKey: !Ref PrivateKey
+        Profile: !Ref Profile
         AtlasProjectID: !Ref AtlasProjectID
         DatabaseName: !Ref DatabaseName
         CollectionName: !Ref CollectionName
