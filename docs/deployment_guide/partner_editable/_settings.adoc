@@ -5,7 +5,7 @@
 :partner-company-name: MongoDB Inc.
 :doc-month: February
 :doc-year: 2023
-:partner-contributors: Zuhair Ahmed, MongoDB
+:partner-contributors: Zuhair Ahmed, MongoDB Inc.
 // :other-contributors: Akua Mansa, Trek10
 //:aws-contributors: Janine Singh, AWS IoT Partner team
 :aws-ia-contributors: Vinod Shukla, AWS Integration & Automation team
