@@ -32,7 +32,7 @@ Please check this https://www.mongodb.com/docs/atlas/app-services/[link^] to lea
 
 === Upload ML Model Artifacts to Amazon S3
 
-Upload your ML Model artifacts to Amazon S3 and create an AWS managed Deep Learning Container Image or your custom Image in ECR to deploy and run the model. For more details on creating container image please check the example code provided in GitHub repository.
+Upload your ML Model artifacts to Amazon S3 and create an AWS managed Deep Learning Container Image or your custom Image in ECR to deploy and run the model. For more details on creating container image please check the example code provided in https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/quickstart-examples/sagemaker-example[this GitHub repository^].
 
 === Create ECR Images for Pull and Push Lambdas
 
