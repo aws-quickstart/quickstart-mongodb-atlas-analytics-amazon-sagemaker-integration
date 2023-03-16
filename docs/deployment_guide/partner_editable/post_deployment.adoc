@@ -1,3 +1,8 @@
 // Include any postdeployment steps here, such as steps necessary to test that the deployment was successful. If there are no postdeployment steps, leave this file empty.
 
 == Postdeployment steps
+
+=== Test the deployment
+
+Testing the solution involves inserting records into MongoDB collection manually or through any application and observe results in the target collection.
+
