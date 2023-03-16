@@ -71,7 +71,6 @@ Parameters:
   Profile:
     Description: "A secret with name cfn/atlas/profile/{Profile}"
     Type: String
-    Default: "default"
   AtlasProjectID:
     Description: Atlas Project ID.
     Type: String

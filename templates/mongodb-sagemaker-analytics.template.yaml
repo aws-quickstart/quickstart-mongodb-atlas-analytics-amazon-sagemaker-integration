@@ -56,7 +56,6 @@ Parameters:
   Profile:
     Description: "A secret with name cfn/atlas/profile/{Profile}"
     Type: String
-    Default: "default"
   AtlasProjectID:
     Description: Atlas Project ID.
     Type: String
@@ -182,6 +181,11 @@ Resources:
 # Event buses
   # Event bus for capturing MongoDB change events.
   EventBusForCapturingMDBEvents:
+    Metadata:
+      cfn-lint:
+        config:
+          ignore_checks:
+            - E1019
     Type: AWS::Events::EventBus
     Properties:
       EventSourceName: !Sub 'aws.partner/mongodb.com/stitch.trigger/${EventTrigger.Id}'
