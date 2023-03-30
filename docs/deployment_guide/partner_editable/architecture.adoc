@@ -1,6 +1,6 @@
 :xrefstyle: short
 
-Deploying this Quick Start with valid parameters builds the following environment in the AWS Cloud.
+Deploying this Partner Solution with valid parameters builds the following environment in the AWS Cloud.
 
 // Replace this example diagram with your own. Follow our wiki guidelines: https://w.amazon.com/bin/view/AWS_Quick_Starts/Process_for_PSAs/#HPrepareyourarchitecturediagram. Upload your source PowerPoint file to the GitHub {deployment name}/docs/images/ directory in its repository.
 
@@ -10,8 +10,8 @@ image::../docs/deployment_guide/images/qs-mongodb-sagemaker.png[Architecture]
 
 As shown in <<architecture1>>, this Partner Solution sets up the following:
 
-* A MongoDB Atlas Trigger which creates a partner event source in the AWS EventBridge. It lets you send MongoDB Atlas Trigger events to an event bus.
-* An Amazon SageMaker Endpoint from the provided model image URI and the S3 link where model artifacts are stored.
-* A Lambda function from the provided image URI to read the events from the event bus and get the results using the SageMaker endpoint.
-* A Lambda function from the provided image URI to write the results back to MongoDB.
-* An EventBridge event bus and event rules to route the events to appropriate Lambda functions.
+* A MongoDB Atlas Realm Trigger which creates a Partner SaaS event bus source in Amazon EventBridge. It lets you send MongoDB change events to an event bus.
+* An Amazon SageMaker Endpoint from the provided model image URI and link to where the pre-trained  model artifacts are stored.
+* A Pull Lambda function from the provided image URI to read the events from the event bus and get the results using the SageMaker endpoint.
+* A Push Lambda function from the provided image URI to write the results back to MongoDB.
+* An EventBridge custom event bus and event rules to route the events to appropriate Lambda functions.

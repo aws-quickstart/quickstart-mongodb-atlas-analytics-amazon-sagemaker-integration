@@ -7,18 +7,8 @@ For troubleshooting common Partner Solution issues, refer to the https://fwd.aws
 
 Errors can typically be resolved by inspecting the CloudFormation event logs or CloudWatch logs created by the MongoDB Atlas CloudFormation resources.
 
-If a stack fails to deploy, check the *Events* tab. If the error occurs for one of the MongoDB Atlas resources (for example, MongoDB::Atlas::Trigger), you will find a corresponding Amazon CloudWatch Logs group called *mongodb-atlas-trigger-logs*. Locate this group, and check the latest log entry to identify the issue.
+If a stack fails to deploy, check the *Events* tab. If the error occurs for one of the MongoDB Atlas resources (for example, MongoDB::Atlas::Trigger), you will find a corresponding Amazon CloudWatch Logs group called *mongodb-atlas-trigger-logs*. Locate this group, and check the latest log entry to identify the issue. Additionally, verify that the parameter inputs are valid, all the ECR image URIs are in the same AWS Region, and check the error messages for each failed resource. 
 
-=== FAQ
+If the Pull or Push Lambda functions are unable to process events, check if event rule has proper event patterns. Update the event rules according to your requirements.
 
-*Q.* I encountered a CREATE_FAILED error when I launched the Quick Start.
-
-*A.* If AWS CloudFormation fails to create the stack, we recommend to check the error messages logged for each failed resource. Please check if all the parameters are valid, all the ECR image URIs are in the same region etc.
-
-*Q.* Pull or Push Lambda unable to process events.
-
-*A.* Check if event rule has proper event patterns. Update the event rules according to your requirements.
-
-*Q.* SageMaker results are inappropriate.
-
-*A.* Check if all the model artifacts are upload to S3 and S3 link is valid. Update the inference filename in the template if filename is other than inference.py.
+If Amazon SageMaker results are inappropriate, check if all the model artifacts are uploaded to Amazon S3 and S3 link is valid. Update the inference filename in the template if filename is not `inference.py`.
