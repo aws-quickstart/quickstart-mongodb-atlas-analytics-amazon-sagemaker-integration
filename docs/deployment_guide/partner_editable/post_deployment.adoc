@@ -4,5 +4,4 @@
 
 === Test the deployment
 
-Testing the solution involves inserting records into MongoDB collection manually or through any application and observe results in the target collection.
-
+To test the solution, insert data into the MongoDB collection, either manually or using an application. For more information, refer to https://www.mongodb.com/docs/compass/current/collections/[Collections^] and https://www.mongodb.com/docs/mongodb-shell/crud/insert/[Insert Documents^].
