@@ -36,4 +36,4 @@ Upload your ML model artifacts to Amazon S3. Create an https://docs.aws.amazon.c
 
 === Create ECR Images for Pull and Push Lambdas
 
-Create an Amazon ECR container image for the Lambda function that reads MongoDB events from EventBridge and the function that writes results back to MongoDB.
+Create an Amazon ECR container image for the pull Lambda function that reads MongoDB events from EventBridge and the push function that writes results back to MongoDB.

@@ -1,4 +1,4 @@
-This Partner Solution deploys MongoDB Atlas Cluster with Amazon SageMaker and other supporting AWS resources. It helps you start working quickly with your machine learning (ML) models using MongoDB as data source and Amazon SageMaker for data analytics.
+This Partner Solution deploys a MongoDB Atlas cluster with Amazon EventBridge and Amazon SageMaker. It helps you start working quickly with your machine learning (ML) models using MongoDB as data source and Amazon SageMaker for data analytics.
 
 // For advanced information about the product, troubleshooting, or additional functionality, refer to the https://{partner-solution-github-org}.github.io/{partner-solution-project-name}/operational/index.html[Operational Guide^].
 
