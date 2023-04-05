@@ -2,5 +2,5 @@
 
 This Partner Solution provides the following deployment options:
 
-* https://fwd.aws/TBD?[Deploy analytics integration^]. This option provisions {partner-product-short-name} Partner Solution as described in the link:#_architecture[Architecture] section.
+* https://fwd.aws/g4jay?[Deploy {partner-product-name}^]. This option deploys the {partner-product-short-name} Partner Solution as described in the link:#_architecture[Architecture] section, earlier in this guide.
 // Do not have any deployment options.
