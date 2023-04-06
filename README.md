@@ -1,8 +1,8 @@
 
-## quickstart-mongodb-atlas-analytics-amazon-sagemaker-integration—Partner Solution
+MongoDB Atlas Analytics with Amazon SageMaker—Partner Solution
 
-For architectural details, step-by-step instructions, and customization options, see the [deployment guide](https://aws-quickstart.github.io/quickstart-mongodb-atlas-analytics-amazon-sagemaker-integration/).
+For architectural details, step-by-step instructions, and customization options, see the [deployment guide](https://fwd.aws/NmVv7?).
 
-To post feedback, submit feature ideas, or report bugs, use the **Issues** section of this GitHub repo. 
+To post feedback, submit feature ideas, or report bugs, use the **Issues** section of this GitHub repo.
 
-To submit code for this Partner Solution, see the [AWS Partner Solution Contributor's Guide](https://aws-quickstart.github.io/).
+To submit code for this Partner Solution, see the [AWS Partner Solution Contributor's Guide](https://fwd.aws/NwqYA?).
