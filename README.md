@@ -1,5 +1,5 @@
 
-MongoDB Atlas Analytics with Amazon SageMaker—Partner Solution
+## MongoDB Atlas Analytics with Amazon SageMaker—Partner Solution
 
 For architectural details, step-by-step instructions, and customization options, see the [deployment guide](https://fwd.aws/NmVv7?).
 
