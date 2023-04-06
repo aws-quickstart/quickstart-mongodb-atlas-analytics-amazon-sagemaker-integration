@@ -10,7 +10,7 @@ Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
       - Label:
-          default: MongoDB Trigger configuration
+          default: MongoDB trigger configuration
         Parameters:
           - Profile
           - AtlasProjectID
@@ -38,7 +38,7 @@ Metadata:
           - QSS3BucketRegion
     ParameterLabels:
       Profile:
-        default: A secret with name cfn/atlas/profile/{Profile}
+        default: Secret with name "cfn/atlas/profile/{Profile}"
       AtlasProjectID:
         default: MongoDB Atlas project ID
       DatabaseName:
@@ -50,15 +50,15 @@ Metadata:
       RealmAppID:
         default: Realm App ID
       ModelDataS3URI:
-        default: ML Model Artifacts S3 URI
+        default: ML model artifacts S3 URI
       ModelECRImageURI:
-        default: Model ECR Image URI
+        default: Model Amazon ECR image URI
       PullLambdaECRImageURI:
-        default: Pull Lambda ECR Image URI
+        default: Pull Lambda ECR image URI
       PushLambdaECRImageURI:
-        default: Push Lambda ECR Image URI
+        default: Push Lambda ECR image URI
       ActivateMongoDBTriggerResource:
-        default: Activate MongoDB Atlas Trigger CloudFormation Resource
+        default: Activate MongoDB Atlas trigger CloudFormation resource
       QSS3BucketName:
         default: Quick Start S3 bucket name
       QSS3KeyPrefix:
@@ -69,46 +69,46 @@ Metadata:
 Parameters:
   # MongoDB Trigger parameters.
   Profile:
-    Description: "A secret with name cfn/atlas/profile/{Profile}"
+    Description: Secret, in format "cfn/atlas/profile/{Profile}".
     Type: String
   AtlasProjectID:
-    Description: Atlas Project ID.
+    Description: MongoDB Atlas project ID.
     Type: String
   DatabaseName:
-    Description: Database name for the trigger.
+    Description: Trigger database name.
     Type: String
   CollectionName:
-    Description: Collection name for the trigger.
+    Description: Trigger collection name.
     Type: String
   ServiceID:
-    Description: Realm Service ID.
+    Description: Realm service ID.
     Type: String
   RealmAppID:
-    Description: Realm App ID.
+    Description: Realm app ID.
     Type: String
 
   # SageMaker parameters.
   ModelDataS3URI:
-    Description: The S3 path where the model artifacts, which result from model training, are stored. This path must point to a single gzip compressed tar archive (.tar.gz suffix).
+    Description: URI of the S3 bucket in which model-training artifacts are stored. This path must point to a single gzip compressed tar archive (".tar.gz" suffix).
     Type: String
   ModelECRImageURI:
-    Description: AWS managed Deep Learning Container Image URI or your custom Image URI from ECR to deploy and run the model.
+    Description: URI of a AWS managed Deep Learning Container image or your custom image from Amazon ECR to deploy and run the ML model.
     Type: String
 
   # Lambda parameters.
   PullLambdaECRImageURI:
-    Description: ECR image URI of the Lambda function to read MongoDB events from EventBridge.
+    Description: Amazon ECR image URI of the pull Lambda function to read MongoDB events from EventBridge.
     Type: String
   PushLambdaECRImageURI:
-    Description: ECR image URI of the Lambda function to write results back to MongoDB.
+    Description: Amazon ECR image URI of the push Lambda function to write results back to MongoDB.
     Type: String
   MongoEndpoint:
-    Description: Your MongoDB endpoint to push results by Lambda function.
+    Description: MongoDB endpoint to which the push Lambda function pushes SageMaker results.
     Type: String
 
   # Activate MongoDB resource parameters.
   ActivateMongoDBTriggerResource:
-    Description: 'Choose "Yes" to activate MongoDB Atlas Trigger CloudFormation resource. If you already activated it in your AWS Region, enter "No."'
+    Description: Choose "No" if you have already activated a CloudFormation resource for a MongoDB Atlas trigger in your Region.
     Type: String
     Default: "Yes"
     AllowedValues:
@@ -211,5 +211,8 @@ Outputs:
     Description: "SageMaker endpoint ARN."
     Value: !GetAtt "AnalyticsStack.Outputs.SageMakerEndpointARN"
   EventBusName:
-    Description: "Event Bus name."
+    Description: "Event bus name."
     Value: !GetAtt "AnalyticsStack.Outputs.EventBusName"
+  Postdeployment:
+    Description: See the deployment guide for postdeployment steps.
+    Value: https://fwd.aws/NmVv7?
