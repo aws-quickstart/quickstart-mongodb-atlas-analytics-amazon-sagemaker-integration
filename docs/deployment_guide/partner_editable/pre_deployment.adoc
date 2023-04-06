@@ -6,34 +6,34 @@
 
 This Partner Solution uses MongoDB Atlas CloudFormation resource types and automatically registers the `MongoDB::Atlas::Trigger` resource in the AWS Region of your choice. Once it's running, you can safely skip this step for additional deployments in each Region by setting the `ActivateMongoDBTriggerResource` parameter to **No**.
 
-=== Prepare your MongoDB Inc. Account
+=== Prepare your MongoDB Atlas account
 
-A MongoDB Atlas programmatic API key must be generated with the appropriate permissions and network access entries so that AWS CloudFormation can successfully authenticate the MongoDB cloud. For more information about creating and managing API keys, see https://docs.atlas.mongodb.com/tutorial/manage-programmatic-access[Programmatic Access to Atlas^].
+A MongoDB Atlas programmatic API key must be generated with the appropriate permissions and network access entries so that AWS CloudFormation can successfully authenticate the MongoDB cloud. For more information about creating and managing API keys, refer to https://docs.atlas.mongodb.com/tutorial/manage-programmatic-access[Get Started with the Atlas Administration API^].
 
-=== Create MongoDB Atlas Cluster
+=== Create a MongoDB Atlas cluster
 
-A MongoDB Atlas Cluster must be created via https://www.mongodb.com[MongoDB Official Website^] or using the https://aws.amazon.com/quickstart/architecture/mongodb-atlas/[MongoDB Atlas on AWS Partner Solution^]. Please see https://aws-quickstart.github.io/quickstart-mongodb-atlas/[deployment guide^] for detailed information to launch MongoDB Atlas on AWS Cloud.
+Create a MongoDB Atlas cluster, either using your https://www.mongodb.com/basics/clusters/mongodb-cluster-setup[MongoDB Atlas account^] or the https://aws.amazon.com/quickstart/architecture/mongodb-atlas/[MongoDB Atlas on AWS Partner Solution^].
 
-=== Create Realm App and Service
+=== Create Realm app and service
 
-A MongoDB Realm App and Service to create triggers which sends events to AWS EventBridge for further processing.
+A MongoDB Realm app and service to create triggers that send events to AWS EventBridge for further processing. For more information, refer to the following:
 
-Check the https://www.mongodb.com/docs/atlas/app-services/admin/api/v3/[Atlas App Services API (3.0)^] to create a Realm App and App Service.
+* https://www.mongodb.com/docs/atlas/app-services/admin/api/v3/[Atlas App Services API (3.0)^]
+* https://www.mongodb.com/docs/atlas/app-services/admin/api/v3/#section/Get-Authentication-Tokens[Get Authentication Tokens^]
 
-Here are direct links to API documentation for creating an app and a service.
+NOTE: Use the access token as a bearer token in the `Authorization` header in the further calls.
 
-* https://www.mongodb.com/docs/atlas/app-services/admin/api/v3/#section/Get-Authentication-Tokens[Get authentication tokens^] (Use the access token as Bearer token in Authorization header in the further calls)
-* https://www.mongodb.com/docs/atlas/app-services/admin/api/v3/#tag/apps/operation/adminCreateApplication[Create App^]
-* https://www.mongodb.com/docs/atlas/app-services/admin/api/v3/#tag/services/operation/adminCreateService[Create Service^]
+* https://www.mongodb.com/docs/atlas/app-services/admin/api/v3/#tag/apps/operation/adminCreateApplication[Create a new app^]
+* https://www.mongodb.com/docs/atlas/app-services/admin/api/v3/#tag/services/operation/adminCreateService[Create a data source or third-party service^]
 
-**Note**: Keep the App ID and Service ID handy for further steps.
+NOTE: Keep the Application ID and Service ID handy for further steps.
 
-Please check this https://www.mongodb.com/docs/atlas/app-services/[link^] to learn more about Atlas App Services.
+* https://www.mongodb.com/docs/atlas/app-services/[What are the Atlas Application Services?^]
 
-=== Upload ML Model Artifacts to Amazon S3
+=== Upload ML model artifacts to Amazon S3
 
-Upload your ML Model artifacts to Amazon S3 and create an AWS managed Deep Learning Container Image or your custom Image in ECR to deploy and run the model. For more details on creating container image please check the example code provided in this https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/quickstart-examples/sagemaker-example[GitHub repository^].
+Upload your ML model artifacts to Amazon S3. Create an https://docs.aws.amazon.com/deep-learning-containers/latest/devguide/deep-learning-containers-images.html[AWS managed Deep Learning Container Image^] or a custom image in Amazon Elastic Container Registry (Amazon ECR) to deploy and run the model. For more information, refer to the sample code provided in the https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/quickstart-examples/sagemaker-example[mongodb/mongodbatlas-cloudformation-resources GitHub repository^].
 
-=== Create ECR Images for Pull and Push Lambdas
+=== Create Amazon ECR images for pull and push Lambda functions
 
-A Lambda function to read MongoDB events from EventBridge and another Lambda function to write results back to MongoDB are required as ECR container images.
+Create an Amazon ECR container image for the pull Lambda function that reads MongoDB events from EventBridge and the push function that writes results back to MongoDB. For more information, see https://docs.aws.amazon.com/lambda/latest/dg/images-create.html[Creating Lambda container images^].
