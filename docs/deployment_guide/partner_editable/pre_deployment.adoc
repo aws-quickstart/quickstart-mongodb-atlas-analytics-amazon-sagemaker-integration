@@ -34,6 +34,6 @@ NOTE: Keep the Application ID and Service ID handy for further steps.
 
 Upload your ML model artifacts to Amazon S3. Create an https://docs.aws.amazon.com/deep-learning-containers/latest/devguide/deep-learning-containers-images.html[AWS managed Deep Learning Container Image^] or a custom image in Amazon Elastic Container Registry (Amazon ECR) to deploy and run the model. For more information, refer to the sample code provided in the https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/quickstart-examples/sagemaker-example[mongodb/mongodbatlas-cloudformation-resources GitHub repository^].
 
-=== Create ECR Images for Pull and Push Lambdas
+=== Create Amazon ECR images for pull and push Lambda functions
 
-Create an Amazon ECR container image for the pull Lambda function that reads MongoDB events from EventBridge and the push function that writes results back to MongoDB.
+Create an Amazon ECR container image for the pull Lambda function that reads MongoDB events from EventBridge and the push function that writes results back to MongoDB. For more information, see https://docs.aws.amazon.com/lambda/latest/dg/images-create.html[Creating Lambda container images^].

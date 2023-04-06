@@ -6,12 +6,22 @@ Deploying this Partner Solution with valid parameters builds the following envir
 
 [#architecture1]
 .Partner Solution architecture for {partner-product-short-name} on AWS
-image::../docs/deployment_guide/images/qs-mongodb-sagemaker.png[Architecture]
+image::../docs/deployment_guide/images/mongodb-atlas-sagemaker-architecture-diagram.png[Architecture]
 
 As shown in <<architecture1>>, this Partner Solution sets up the following:
 
-* A MongoDB Atlas Realm trigger to create a Partner SaaS event bus source in Amazon EventBridge. The trigger lets you send MongoDB change events to an event bus.
-* An Amazon SageMaker endpoint from the provided model image URI and link to where the pre-trained model artifacts are stored.
-* A pull Lambda function from the provided image URI to read the events from the event bus and get the results using the SageMaker endpoint.
-* A push Lambda function from the provided image URI to write the results back to MongoDB.
-* An EventBridge custom event bus and event rules to route events to the pull and push Lambda functions.
+* In the MongoDB SaaS account:
+** A MongoDB cluster.
+** A MongoDB Atlas Realm trigger to send database change events to Amazon EventBridge in the customer account.
+* In the customer account:
+** Amazon EventBridge to ingest MongoDB change events from the Realm trigger and send Amazon SageMaker result events back to the MongoDB database. EventBridge uses the following event buses and rules:
+*** A Partner SaaS event bus to receive MongoDB change events from the Realm trigger.
+*** A rule to route events to the pull events Lambda function.
+*** A custom event bus to receive SageMaker result events from the pull events Lambda function.
+*** A rule to route results to the push results Lambda function.
+** Two Lambda functions:
+*** A pull events function to read events from the Partner SaaS event bus and get results from SageMaker.
+*** A push results function to write results from SageMaker to the MongoDB database in the MongoDB SaaS account.
+** An Amazon Simple Storage Service (Amazon S3) bucket for model-training artifacts.
+** Amazon SageMaker to provide an endpoint to a pretrained ML model.
+
