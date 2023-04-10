@@ -1,0 +1,7 @@
+// Include any postdeployment steps here, such as steps necessary to test that the deployment was successful. If there are no postdeployment steps, leave this file empty.
+
+== Postdeployment steps
+
+=== Test the deployment
+
+To test the solution, insert data into the MongoDB collection, either manually or using an application. For more information, refer to https://www.mongodb.com/docs/compass/current/collections/[Collections^] and https://www.mongodb.com/docs/mongodb-shell/crud/insert/[Insert Documents^].

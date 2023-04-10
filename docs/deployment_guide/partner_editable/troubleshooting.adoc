@@ -1,0 +1,14 @@
+// Add any unique troubleshooting steps here.
+
+For troubleshooting common Partner Solution issues, refer to the https://fwd.aws/rA69w?[AWS Partner Solution General Information Guide^] and https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/troubleshooting.html[Troubleshooting CloudFormation^].
+
+// == Resources
+// Uncomment section and add links to any external resources that are specified by the partner.
+
+Errors can typically be resolved by inspecting CloudFormation event logs or CloudWatch logs created by the MongoDB Atlas CloudFormation resources.
+
+If a stack fails to deploy, check the *Events* tab. If the error occurs for one of the MongoDB Atlas resources (for example, `MongoDB::Atlas::Trigger`), locate the corresponding Amazon CloudWatch Logs group called *mongodb-atlas-trigger-logs*. Check the latest log entry to identify the issue. Additionally, verify that the parameter inputs are valid and that all of the Amazon ECR image URIs are in the same AWS Region, and check the error messages for each failed resource.
+
+If the pull or push Lambda functions are unable to process events, check if the event rule has the proper event patterns. Update the event rules according to your requirements.
+
+If Amazon SageMaker results are inappropriate, verify that all of the model artifacts are uploaded to Amazon S3 and that the Amazon S3 link is valid. Update the inference filename in the template if filename is not `inference.py`.

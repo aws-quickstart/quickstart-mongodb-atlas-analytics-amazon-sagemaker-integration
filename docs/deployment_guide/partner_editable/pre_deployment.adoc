@@ -1,0 +1,39 @@
+// Include any predeployment steps here, such as signing up for a Marketplace AMI or making any changes to a partner account. If there are no predeployment steps, leave this file empty.
+
+== Predeployment steps
+
+=== Prepare your AWS Account
+
+This Partner Solution uses MongoDB Atlas CloudFormation resource types and automatically registers the `MongoDB::Atlas::Trigger` resource in the AWS Region of your choice. Once it's running, you can safely skip this step for additional deployments in each Region by setting the `ActivateMongoDBTriggerResource` parameter to **No**.
+
+=== Prepare your MongoDB Atlas account
+
+A MongoDB Atlas programmatic API key must be generated with the appropriate permissions and network access entries so that AWS CloudFormation can successfully authenticate the MongoDB cloud. For more information about creating and managing API keys, refer to https://docs.atlas.mongodb.com/tutorial/manage-programmatic-access[Get Started with the Atlas Administration API^].
+
+=== Create a MongoDB Atlas cluster
+
+Create a MongoDB Atlas cluster, either using your https://www.mongodb.com/basics/clusters/mongodb-cluster-setup[MongoDB Atlas account^] or the https://aws.amazon.com/quickstart/architecture/mongodb-atlas/[MongoDB Atlas on AWS Partner Solution^].
+
+=== Create Realm app and service
+
+A MongoDB Realm app and service to create triggers that send events to AWS EventBridge for further processing. For more information, refer to the following:
+
+* https://www.mongodb.com/docs/atlas/app-services/admin/api/v3/[Atlas App Services API (3.0)^]
+* https://www.mongodb.com/docs/atlas/app-services/admin/api/v3/#section/Get-Authentication-Tokens[Get Authentication Tokens^]
+
+NOTE: Use the access token as a bearer token in the `Authorization` header in the further calls.
+
+* https://www.mongodb.com/docs/atlas/app-services/admin/api/v3/#tag/apps/operation/adminCreateApplication[Create a new app^]
+* https://www.mongodb.com/docs/atlas/app-services/admin/api/v3/#tag/services/operation/adminCreateService[Create a data source or third-party service^]
+
+NOTE: Keep the Application ID and Service ID handy for further steps.
+
+* https://www.mongodb.com/docs/atlas/app-services/[What are the Atlas Application Services?^]
+
+=== Upload ML model artifacts to Amazon S3
+
+Upload your ML model artifacts to Amazon S3. Create an https://docs.aws.amazon.com/deep-learning-containers/latest/devguide/deep-learning-containers-images.html[AWS managed Deep Learning Container Image^] or a custom image in Amazon Elastic Container Registry (Amazon ECR) to deploy and run the model. For more information, refer to the sample code provided in the https://github.com/mongodb/mongodbatlas-cloudformation-resources/tree/master/quickstart-examples/sagemaker-example[mongodb/mongodbatlas-cloudformation-resources GitHub repository^].
+
+=== Create Amazon ECR images for pull and push Lambda functions
+
+Create an Amazon ECR container image for the pull Lambda function that reads MongoDB events from EventBridge and the push function that writes results back to MongoDB. For more information, see https://docs.aws.amazon.com/lambda/latest/dg/images-create.html[Creating Lambda container images^].
