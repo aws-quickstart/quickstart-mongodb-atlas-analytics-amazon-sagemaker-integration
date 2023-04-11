@@ -5,9 +5,9 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.17">
-<meta name="description" content="Analytics with MongoDB Atlas and Amazon SageMaker Deployment Guide on AWS">
-<meta name="keywords" content="Partner Solution, AWS, Analytics with MongoDB Atlas and Amazon SageMaker">
-<title>Analytics with MongoDB Atlas and Amazon SageMaker on AWS</title>
+<meta name="description" content="MongoDB Atlas Analytics with Amazon SageMaker Deployment Guide on AWS">
+<meta name="keywords" content="Partner Solution, AWS, MongoDB Atlas Analytics with Amazon SageMaker">
+<title>MongoDB Atlas Analytics with Amazon SageMaker on AWS</title>
 <style>
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
 /* Uncomment @import statement to use as custom stylesheet */
@@ -884,7 +884,7 @@ p.footer-text a{color:#d7d8d8}
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<h2 id="_analytics_with_mongodb_atlas_and_amazon_sagemaker_on_aws" class="discrete text-center">Analytics with MongoDB Atlas and Amazon SageMaker on AWS</h2>
+<h2 id="_mongodb_atlas_analytics_with_amazon_sagemaker_on_aws" class="discrete text-center">MongoDB Atlas Analytics with Amazon SageMaker on AWS</h2>
 <h2 id="_partner_solution_deployment_guide" class="discrete text-left text-center">Partner Solution Deployment Guide</h2>
 <div class="imageblock text-center">
 <div class="content">
@@ -892,7 +892,7 @@ p.footer-text a{color:#d7d8d8}
 </div>
 </div>
 <div class="paragraph text-center">
-<p><strong>February 2023</strong><br>
+<p><strong>April 2023</strong><br>
 <em>Zuhair Ahmed, MongoDB Inc.</em><br>
 <em>Vinod Shukla, AWS Integration &amp; Automation team</em><br></p>
 </div>
@@ -947,7 +947,7 @@ Refer to the <a href="https://github.com/aws-quickstart/quickstart-mongodb-atlas
 <div class="content">
 <img src="docs/deployment_guide/images/mongodb-atlas-sagemaker-architecture-diagram.png" alt="Architecture">
 </div>
-<div class="title">Figure 1. Partner Solution architecture for Analytics with MongoDB Atlas and Amazon SageMaker on AWS</div>
+<div class="title">Figure 1. Partner Solution architecture for MongoDB Atlas Analytics with Amazon SageMaker on AWS</div>
 </div>
 <div class="paragraph">
 <p>As shown in <a href="#architecture1">Figure 1</a>, this Partner Solution sets up the following:</p>
@@ -972,14 +972,14 @@ Refer to the <a href="https://github.com/aws-quickstart/quickstart-mongodb-atlas
 <div class="ulist">
 <ul>
 <li>
-<p>Amazon EventBridge to ingest MongoDB change events from the Realm trigger and send Amazon SageMaker result events back to the MongoDB database. EventBridge uses the following event buses and rules:</p>
+<p>EventBridge to ingest MongoDB change events from the Realm trigger and send SageMaker result events back to the MongoDB database. EventBridge uses the following event buses and rules:</p>
 <div class="ulist">
 <ul>
 <li>
 <p>A Partner SaaS event bus to receive MongoDB change events from the Realm trigger.</p>
 </li>
 <li>
-<p>A rule to route events to the pull events Lambda function.</p>
+<p>A rule to route events to the pull events AWS Lambda function.</p>
 </li>
 <li>
 <p>A custom event bus to receive SageMaker result events from the pull events Lambda function.</p>
@@ -1025,7 +1025,7 @@ Refer to the <a href="https://github.com/aws-quickstart/quickstart-mongodb-atlas
 <div class="ulist">
 <ul>
 <li>
-<p><a href="https://fwd.aws/g4jay?" target="_blank" rel="noopener">Deploy Analytics with MongoDB Atlas and Amazon SageMaker</a>. This option deploys the Analytics with MongoDB Atlas and Amazon SageMaker Partner Solution as described in the <a href="#_architecture">Architecture</a> section, earlier in this guide.</p>
+<p><a href="https://fwd.aws/g4jay?" target="_blank" rel="noopener">Deploy MongoDB Atlas Analytics with Amazon SageMaker</a>. This option deploys the MongoDB Atlas Analytics with Amazon SageMaker Partner Solution as described in the <a href="#_architecture">Architecture</a> section, earlier in this guide.</p>
 </li>
 </ul>
 </div>
@@ -1162,7 +1162,7 @@ Unless you&#8217;re customizing the Partner Solution templates or are instructed
 <p>Choose <strong>Create stack</strong>. The stack takes about 10-20 minutes to deploy.</p>
 </li>
 <li>
-<p>Monitor the stack&#8217;s status, and when the status is <strong>CREATE_COMPLETE</strong>, the Analytics with MongoDB Atlas and Amazon SageMaker deployment is ready.</p>
+<p>Monitor the stack&#8217;s status, and when the status is <strong>CREATE_COMPLETE</strong>, the MongoDB Atlas Analytics with Amazon SageMaker deployment is ready.</p>
 </li>
 <li>
 <p>To view the created resources, choose the <strong>Outputs</strong> tab.</p>

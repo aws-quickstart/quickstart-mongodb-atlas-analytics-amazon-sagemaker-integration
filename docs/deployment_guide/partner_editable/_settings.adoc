@@ -1,9 +1,9 @@
 :partner-solution-project-name: quickstart-mongodb-atlas-analytics-amazon-sagemaker-integration
 :partner-solution-github-org: aws-quickstart
-:partner-product-name: Analytics with MongoDB Atlas and Amazon SageMaker
-:partner-product-short-name: Analytics with MongoDB Atlas and Amazon SageMaker
+:partner-product-name: MongoDB Atlas Analytics with Amazon SageMaker
+:partner-product-short-name: MongoDB Atlas Analytics with Amazon SageMaker
 :partner-company-name: MongoDB Inc.
-:doc-month: February
+:doc-month: April
 :doc-year: 2023
 :partner-contributors: Zuhair Ahmed, MongoDB Inc.
 // :other-contributors: Akua Mansa, Trek10
